@@ -1728,3 +1728,327 @@ Object.getOwnPropertyDescriptor(obj, "test");
 4. 접근자 프로퍼티라면 getter or setter 함수를 호출 해 결과를 반환한다.
 
 ## 16.4 프로퍼티 정의
+> 새로운 프로퍼티를 정의하면서 프로퍼티 어트리뷰트를 명시적으로 정의하거ㅏㄴ, 기존 프로퍼티의 프로퍼티 어트리뷰트를 재정의하는 것
+
+Object.defineProperty를 통해 프로퍼티의 어트리뷰트를 정의할 수 있다.
+
+```
+const person = {};
+
+Object.defineProperty(person, 'firstName', {
+	value: '성',
+	writable: true,
+	enumerable: true,
+	configurable: true
+})
+
+```
+
+| 프로퍼티 어트리뷰트 | 프로퍼티 디스크립터 객체의 프로퍼티 | 생략 시 기본값 |
+| -- | -- | -- |
+|[[Value]]|value| undefined|
+|[[Get]]|writable|undefined|
+|[[Set]]|enumerable|undefined|
+|[[Writable]]|configurable|false |
+|[[Enumerable]]|enumerable|false|
+|[[Configurable]]|configurable|false |
+
+Object.defineProperties를 이용하면 여러개의 프로퍼티를 한번에 정의할 수 있다.
+
+```
+const person = {};
+
+Object.defineProperties(person, {
+  // 데이터 프로퍼티 정의
+  firstName: {
+    value: 'Ungmo',
+    writable: true,
+    enumerable: true,
+    configurable: true
+  },
+  lastName: {
+    value: 'Lee',
+    writable: true,
+    enumerable: true,
+    configurable: true
+  },
+  // 접근자 프로퍼티 정의
+  fullName: {
+    // getter 함수
+    get() {
+      return `${this.firstName} ${this.lastName}`;
+    },
+    // setter 함수
+    set(name) {
+      [this.firstName, this.lastName] = name.split(' ');
+    },
+    enumerable: true,
+    configurable: true
+  }
+});
+```
+
+## 16.5 객체 변경 방지
+객체는 재할당 없이 직접 변경할 수 있다. 자바스크립트는 이러한 변경을 방지하는 다양한 메서드를 제공한다.
+[프로퍼티 추가, 프로퍼티 삭제, 프로퍼티 값 읽기, 프로퍼티 값 쓰기, 프로퍼티 어트리뷰트 재정의]
+* Object.preventExtensions - 객체 확장 금지: 프로퍼티 추가 x
+* Object.seal - 객체 밀봉: 프로퍼티 추가, 삭제, 재정의 x
+* Object.freeze - 객체 동결: 프로퍼티 값 읽기만 가능
+
+### 16.5.1 Object.preventExtensions
+> 확장 금지 = 프로퍼티 추가 금지
+
+확장 가능 여부는 Object.isExtensible 메서드로 확인 가능
+
+### 16.5.2 Object.seal
+> 밀봉 = 읽기와 쓰기만 가능
+
+밀봉 여부는 Object.isSealed 메서드로 확인 가능
+
+### 16.5.3 Object.freeze
+> 동결 = 읽기만 가능
+
+동결 여부는 Object.isFrozen 메서드로 확인 가능
+
+### 16.5.4 불변 객체
+위의 방식들은 얕은 변경 방지이기 때문에 중첩 객체에 대해서는 적용이 되지 않는다. 중첩 객체도 변경이 불가능하도록 만드려면 재귀적으로 Object.freeze 메서드를 호출해야 한다.
+
+```
+function deepFreeze(target) {
+  // 객체가 아니거나 동결된 객체는 무시하고 객체이고 동결되지 않은 객체만 동결한다.
+  if (target && typeof target === 'object' && !Object.isFrozen(target)) {
+    Object.freeze(target);
+    /*
+      모든 프로퍼티를 순회하며 재귀적으로 동결한다.
+      Object.keys 메서드는 객체 자신의 열거 가능한 프로퍼티 키를 배열로 반환한다.
+      ("19.15.2. Object.keys/values/entries 메서드" 참고)
+      forEach 메서드는 배열을 순회하며 배열의 각 요소에 대하여 콜백 함수를 실행한다.
+      ("27.9.2. Array.prototype.forEach" 참고)
+    */
+    Object.keys(target).forEach(key => deepFreeze(target[key]));
+  }
+  return target;
+}
+
+const person = {
+  name: 'Lee',
+  address: { city: 'Seoul' }
+};
+
+// 깊은 객체 동결
+deepFreeze(person);
+
+console.log(Object.isFrozen(person)); // true
+// 중첩 객체까지 동결한다.
+console.log(Object.isFrozen(person.address)); // true
+
+person.address.city = 'Busan';
+console.log(person); // {name: "Lee", address: {city: "Seoul"}}
+```
+
+# 17장 생성자 함수에 의한 객체 생성
+## 17.1 Object 생성자 함수
+> new 키워드와 Object 생성자 함수를 호출하면 빈 객체를 생성하여 반환한다. 이후 프로퍼티, 메서드를 추가하여 객체를 완성할 수 있다.
+
+```
+// 빈 객체의 생성
+const person = new Object();
+
+// 프로퍼티 추가
+person.name = 'Lee';
+person.sayHello = function () {
+  console.log('Hi! My name is ' + this.name);
+};
+
+console.log(person); // {name: "Lee", sayHello: ƒ}
+person.sayHello(); // Hi! My name is Lee
+```
+
+* **생성자 함수**란 new 연산자와 함께 호출해 객체를 생성하는 함수를 말한다. 이 방법으로 만들어진 객체를 인스턴스라고 한다.
+
+객체 리터럴을 사용하는 방식이 더 간단하기는 한데...?
+
+## 17.2 생성자 함수
+### 17.2.1 객체 리터럴에 의한 객체 생성 방식의 문제점
+동일한 프로퍼티를 갖는 객체를 여러개 생성해야 할 경우 매번 같은 프로퍼티를 기술해야 하기 떄문에 비효율적이다.
+```
+const circle1 = {
+  radius: 5,
+  getDiameter() {
+    return 2 * this.radius;
+  }
+};
+
+console.log(circle1.getDiameter()); // 10
+
+const circle2 = {
+  radius: 10,
+  getDiameter() {
+    return 2 * this.radius;
+  }
+};
+
+console.log(circle2.getDiameter()); // 20
+```
+
+### 17.2.2 생성자 함수 방식에 의한 객체 생성의 장점
+프로퍼티 구조가 비슷한 여러개의 객체를 간편하게 생성할 수 있다.
+```
+function Circle(radius) {
+  // 생성자 함수 내부의 this는 생성자 함수가 생성할 인스턴스를 가리킨다.
+  this.radius = radius;
+  this.getDiameter = function () {
+    return 2 * this.radius;
+  };
+}
+
+// 인스턴스의 생성
+const circle1 = new Circle(5);  // 반지름이 5인 Circle 객체를 생성
+const circle2 = new Circle(10); // 반지름이 10인 Circle 객체를 생성
+
+console.log(circle1.getDiameter()); // 10
+console.log(circle2.getDiameter()); // 20
+```
+
+만약 new 연산자를 동반하지 않으면 일반 함수로 작동한다. 
+```
+const circle3 = Circle(15);
+console.log(circle3); // undefined
+```
+
+## 17.2.3 생성자 함수의 인스턴스 생성 과정
+
+* 생성자 함수의 역할: 템플릿으로 작동해서 인스터스를 생성(필수). 생성된 인스턴스를 초기화(옵션)
+
+#### 1. 인스턴스 생성과 this 바인딩
+암묵적으로 빈 객체가 생성된다. 인스턴스는 this에 바인딩된다. 이 처리는 런타임 이전에 실행된다.
+
+#### 2. 인스턴스 초기화
+코드가 한줄씩 실행되어 this에 바인딩 된 인스턴스를 초기화한다. 즉, tihs에 바인딩 된 인스턴스에 프로퍼티, 메서드를 추가하고, 인수로 전달받은 초기값을 인스턴스 프로퍼티에 할당하여 초기화하거나 고정값을 할당한다.
+
+#### 3. 인스턴스 반환
+내부의 처리가 모두 끝나면 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다. 만약 다른 객체를 명시적으로 리턴한다면 그 객체가 반환된다.
+
+### 17.2.4 내부 메서드 [[Call]]과 [[Construct]]
+
+함수는 객체이므로 일반 객체와 동일하게 동작할 수 있다. 허나 일반 객체와는 다르다. 일반 객체는 호출할 수 없지만 함수는 호출할 수 있다. 따라서 일반 객체가 가진 내부 슬롯, 내부 메서드에 더불어 함수 객체만을 위한 내부 슬롯과 메서드를 추가로 가지고 있다. 함수가 호출되면 내부 메서드 [[Call]]이 호출되고, new 연산자와 함께 생성자 함수로 호출되면 [[Construct]]가 호출된다.
+
+[[Call]]을 가지는 함수 객체를 callable, [[Construct]]를 가지는 함수 객체를 constructor, 그렇지 않은 함수 객체를 non-constructor 라고 부른다. 함수 객체는 반드시 callable이어야 한다. 하지만 반드시 constructor일 필요는 없다.
+
+### 17.2.5 constructor 와 non-constructor의 구분
+* constructor: 함수 선언문, 함수 표현식, 클래스
+* non-constructor: 메서드, 화살표 함수
+
+그러나 ECMAScript에서는 메서드는 ES6의 메서드 축약 표현만을 의미한다. 즉, 함수 선언문과 함수 표현식으로 정의된 함수만 constructor이고, ES6의 화살표 함수와 축약 표현으로 정의된 함수는 non-constructor이다.
+
+### 17.2.6 new 연산자
+사실 생성자 함수와 일반 함수에 특별한 형식적 차이는 없다. 단, new 연산자와 함께 사용하면 [[Call]]이 아니라 [[Constructor]]가 호출된다. 말했듯 형식적 차이가 없으므로 파스칼 케이스를 사용해서 일반 함수와 표기를 구분하는 것이 좋다.
+
+### 17.2.7 new.target
+new 없이 생성자 함수를 사용하는 것을 막기 위해 ES6에서 new.target을 도입했다. 메타 프로퍼티라고 불리며 함수 내부에서 사용 시 생성자 함수로 사용되었는지 호출할 수 있다. 
+* new와 함께 호출 시: new.target은 함수 자신
+* new 없이 호출: new.target은 undefined
+
+Object와 Function 생성자 함수는 new 없이 호출해도 동일하게 작동한다. 하지만 String, Number, Boolean은 타입을 변환한다.
+
+# 18장 함수와 일급 객체
+## 18.1 일급 객체
+다음의 조건을 만족하면 일급 객체라고 한다.
+> * 무명의 리터럴로 생성 가능
+* 변수나 자료구조에 저장 가능
+* 함수의 매개변수에 전달가능
+* 함수의 반환값으로 사용 가능
+
+함수가 일급객체라는 뜻은 객체와 동일하게 사용할 수 있다는 의미이다. 따라서 함수는 값을 사용하는 곳이라면 어디서든지 리터럴로 정의할 수 있으며, 런타임에 함수 객체로 평가된다. **함수가 일급 객체로 가지는 가장 큰 특징은 매개변수에 전달할 수 있으며 함수의 반환값으로 사용이 가능하다는 것이다.** 
+그러나 일반 객체는 호출이 불가능하지만 함수 객체는 호출이 가능하다는 점, 함수 객체는 고유의 프로퍼티를 소유한다는 점(프로퍼티 어트리뷰트 참고)의 차이점이 있다.
+
+## 18.2 함수 객체의 프로퍼티
+### 18.2.1 arguments 프로퍼티
+> 함수 객체의 arguments프로퍼티의 값은 arguments 객체이다. 
+
+* arguments 객체는 전달받은 인수를 담고 있는 순회 가능한 유사 배열 객체이며, 함수 내부에서 지역 변수에서 사용된다.
+* ES3에서 arguments 프로퍼티는 폐지되었다. 
+* 자바스크립트는 함수의 매개변수와 인수의 개수가 일치하는지 확인하지 않는다. 따라서 함수 호출 시 개수만큼 인수를 전달하지 않아도 오류가 나지 않는다.
+* 초과된 인수는 무시되는데, 그냥 버려지는 것은 아니다. 암묵적으로 arguments 객체의 프로퍼티로 보관된다.
+* arguments 객체는 인수를 프로퍼티 값으로 소유하며, 프로퍼티 키는 인수의 순서이다. calle 프로퍼티는 함수 자신이고, length프로퍼티는 인수의 개수이다.
+* 함수 호출 시 인수 개수를 확인하고 동작을 달리할 수 있는데, 이때 유용하게 사용하는 것이 arguments 객체이다. 가변 인자 함수를 구현할 때 유용하다.
+```
+function sum() {
+  let res = 0;
+
+  // arguments 객체는 length 프로퍼티가 있는 유사 배열 객체이므로 for 문으로 순회할 수 있다.
+  for (let i = 0; i < arguments.length; i++) {
+    res += arguments[i];
+  }
+
+  return res;
+}
+
+console.log(sum());        // 0
+console.log(sum(1, 2));    // 3
+console.log(sum(1, 2, 3)); // 6
+```
+* arguments 객체는 유사배열객체이다. 따라서 배열로 변환하고 배열메서드를 사용해야하는 번거로움이 있는데, 이를 해결하기 위해 ES6에서 Rest 파라미터를 도입했다.
+
+```
+function sum(...args) {
+  return args.reduce((pre, cur) => pre + cur, 0);
+}
+
+console.log(sum(1, 2));          // 3
+console.log(sum(1, 2, 3, 4, 5)); // 15
+```
+### 18.2.2 caller 프로퍼티
+> ECMAScript에 포함되지 않은 비표준 프로퍼티이다. caller 프로퍼티는 함수 자신을 호출한 함수를 가리킨다.
+
+### 18.2.3 length 프로퍼티
+> 함수를 정의할 때 선언한 매개변수의 개수를 가리킨다.
+
+단, arguments 객체의 length 프로퍼티(인자의 개수)와 함수 객체의 length 프로퍼티의 값이 다를 수 있으므로 주의한다.
+
+### 18.2.4 name 프로퍼티
+> 함수의 이름을 나타낸다.
+
+단, ES5에서는 익명 함수 표현식의 경우 빈 문자열을, ES6에서는 함수 객체를 가리키는 식별자를 값으로 가진다.
+```
+// 기명 함수 표현식
+var namedFunc = function foo() {};
+console.log(namedFunc.name); // foo
+
+// 익명 함수 표현식
+var anonymousFunc = function() {};
+// ES5: name 프로퍼티는 빈 문자열을 값으로 갖는다.
+// ES6: name 프로퍼티는 함수 객체를 가리키는 변수 이름을 값으로 갖는다.
+console.log(anonymousFunc.name); // anonymousFunc
+
+// 함수 선언문(Function declaration)
+function bar() {}
+console.log(bar.name); // bar
+```
+
+### 18.2.5 `__proto__` 접근자 프로퍼티
+> 모든 객체는 [[Prototype]]이라는 내부 슬롯을 가진다. 이는 프로토 타입 객체를 가리킨다. `__proto__` 프로퍼티는 [[Prototype]]내부 슬롯이 가리키는 프로토타입 객체에 접근하기 위한 접근자 프로퍼티이다.
+
+```
+const obj = { a: 1 };
+
+// 객체 리터럴 방식으로 생성한 객체의 프로토타입 객체는 Object.prototype이다.
+console.log(obj.__proto__ === Object.prototype); // true
+
+// 객체 리터럴 방식으로 생성한 객체는 프로토타입 객체인 Object.prototype의 프로퍼티를 상속받는다.
+// hasOwnProperty 메서드는 Object.prototype의 메서드다.
+console.log(obj.hasOwnProperty('a'));         // true
+console.log(obj.hasOwnProperty('__proto__')); // false
+```
+### 18.2.6 prototype 프로퍼티
+> 생성자 함수로 호출할 수 있는 함수 객체, 즉, constructor만이 소유하는 프로퍼티이다. 
+
+```
+// 함수 객체는 prototype 프로퍼티를 소유한다.
+(function () {}).hasOwnProperty('prototype'); // -> true
+
+// 일반 객체는 prototype 프로퍼티를 소유하지 않는다.
+({}).hasOwnProperty('prototype'); // -> false
+```
+
+함수가 객체를 생성하는 생성자 함수로 호출될 때 생성자 함수가 생성할 인스턴스의 프로토타입 객체를 가리킨다. 
