@@ -2749,7 +2749,7 @@ for (const key in person) {
 ```
 이는 상속받은 프로퍼티까지 순회한다. 다만, Object.toString과 같은 Object.prototype의 프로퍼티는 열거되지 않는데, 그 이유는 순회되지 않도록 정의된 프로퍼티이기 떄문이다. Object.prototype.toString의 [[Enumerable]]의 값은 flase 이다.
 
-따라서, ** `for...in`문은 프로토타입 체인 상의 모든 프로토타입 프로퍼티 중에서 프로퍼티 어트리뷰트 [[Enumerable]]의 값이 true인 값을 순회하며 열거한다.**
+따라서, **`for...in`문은 프로토타입 체인 상의 모든 프로토타입 프로퍼티 중에서 프로퍼티 어트리뷰트 [[Enumerable]]의 값이 true인 값을 순회하며 열거한다.**
 
 또한 키가 심벌인 프로퍼티 또한 열거하지 않는다. 
 
@@ -2824,4 +2824,190 @@ Object.entries(person).forEach(([key, value]) => console.log(key, value));
 name Lee
 address Seoul
 */
+```
+
+# 20장 strict mode
+
+## 20.1 strict mode 란?
+코드를 작성할 때, 오타 혹은 지식의 미비로 인한 실수는 언제나 발생한다. 따라서 잠재적인 오류를 발생시키기 어려운 환경을 만들고 그 환경에서 개발하는 것이 조금 더 근본적인 해결책일 것이다. 
+
+이러한 환경 생성을 위해서 ES6에서 strict mode 가 추가되었다. 문법을 좀 더 엄격히 적용시켜 오류가 발생할 가능성이 높거나 JS엔진 최적화에 문제를 일으킬 수 있는 코드에 명시적인 경고를 제공한다. ESLint 와 같은 린트 도구를 사용해도 유사한 효과를 얻을 수 있다. 린트 도구는 잠재적 오류까지 찾아내며, strict mode에서 제한하는 오류와 코딩 컨벤션을 설정 파일로 정의하고 강제할 수 있기 때문에 더욱 강력한 효과를 얻을 수 있다.
+
+## 20.2 strict mode의 적용
+
+전역의 선두 혹은 함수 몸체의 서두에 `'use strict';` 를 추가한다.
+
+```
+'use strict';
+
+function foo() {
+  x = 10; // ReferenceError: x is not defined
+}
+foo();
+```
+
+```
+function foo() {
+  'use strict';
+
+  x = 10; // ReferenceError: x is not defined
+}
+foo();
+```
+```
+function foo() {
+  x = 10; // 에러를 발생시키지 않는다.
+  'use strict';
+}
+foo();
+
+function foo2() {
+  x = 10; // 에러를 발생시키지 않는다.
+  'use strict';
+  y = 20; // 에러를 발생시키지 않는다.
+}
+foo2();
+```
+
+## 20.3 전역에 strict mode를 사용하는 것을 피하자
+전역에 적용한 strict mode 는 스크립트 별로 적용된다.
+
+```
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    'use strict';
+  </script>
+  <script>
+    x = 1; // 에러가 발생하지 않는다.
+    console.log(x); // 1
+  </script>
+  <script>
+    'use strict';
+
+    y = 1; // ReferenceError: y is not defined
+    console.log(y);
+  </script>
+</body>
+</html>
+```
+
+strict mode와 non-strict mode를 혼용하는 것은 오류를 발생시킬 수 있다. 특히 외부 서드파티 라이브러리일 경우 라이브러리가 non-strict mode 인 경우도 있기 때문에 전역에 strict mode를 적용하는 것은 바람직 하지 안핟. 이런 경우 즉시실행 함수로 스크립트 전체를 감싸서 스코프를 구분하고, 즉시실행 함수의 서두에 strict mode를 사용한다. 
+
+```
+// 즉시 실행 함수의 선두에 strict mode 적용
+(function () {
+  'use strict';
+
+  // Do something...
+}());
+```
+
+## 20.4 함수 단위로 strict mode를 적용하는 것도 피하자
+함수 단위로 strict mode를 적용할수도 있으나, 이 역시도 피하는 것이 좋다. 일일이 적용하는 것도 번거로울 뿐더러, strict mode 가 적용된 함수가 참조하는 외부 함수의 컨텍스트에 strict 를 적용하지 않는다면 이 또한 문제가 발생할수도 있다. 
+
+```
+(function () {
+  // non-strict mode
+  var lеt = 10; // 에러가 발생하지 않는다.
+
+  function foo() {
+    'use strict';
+
+    let = 20; // SyntaxError: Unexpected strict mode reserved word
+  }
+  foo();
+}());
+```
+따라서 엄격 모드는 그냥 즉시실행 함수로 감싼 스크립트 단위로 사용하는 것이 바람직하다.
+
+## 20.5 strict mode가 발생시키는 에러
+
+### 20.5.1 암묵적 전역
+선언하지 않은 변수를 참조하면 RefereneError 가 발생한다.
+```
+(function () {
+  'use strict';
+
+  x = 1;
+  console.log(x); // ReferenceError: x is not defined
+}());
+```
+
+### 20.5.2 변수, 함수, 매개변수의 삭제
+delete 연산자로 변수, 함수, 매개변수를 삭제하면 SyntaxError가 발생한다.
+
+```
+(function () {
+  'use strict';
+
+  var x = 1;
+  delete x;
+  // SyntaxError: Delete of an unqualified identifier in strict mode.
+
+  function foo(a) {
+    delete a;
+    // SyntaxError: Delete of an unqualified identifier in strict mode.
+  }
+  delete foo;
+  // SyntaxError: Delete of an unqualified identifier in strict mode.
+}());
+```
+
+### 20.5.3 매개변수 이름의 중복
+```
+(function () {
+  'use strict';
+
+  //SyntaxError: Duplicate parameter name not allowed in this context
+  function foo(x, x) {
+    return x + x;
+  }
+  console.log(foo(1, 2));
+}());
+```
+### 20.5.4 with문의 사용
+with문을 사용하면 SyntaxError 가 발생한다. with문은 전달된 객체를 스코프 체인에 추가한다. 프로퍼티를 반복해서 사용할 때 이름을 생략할 수 있는 장점이 있으나, 가독성과 성능이 나빠진다.
+```
+(function () {
+  'use strict';
+
+  // SyntaxError: Strict mode code may not include a with statement
+  with({ x: 1 }) {
+    console.log(x);
+  }
+}());
+```
+
+## 20.6 strict mode 적용에 의한 변화
+### 20.6.1 일반 함수의 this
+strict mode 에서 함수를 인반 함수로 호출하면 this에 undefined가 바인딩된다. 일반 함수 내부에서는 this를 사용할 필요가 없기 때문이다.
+```
+(function () {
+  'use strict';
+
+  function foo() {
+    console.log(this); // undefined
+  }
+  foo();
+
+  function Foo() {
+    console.log(this); // Foo
+  }
+  new Foo();
+}());
+```
+
+### 20.6.2 arguments 객체
+strict mode에서는 매개변수에 전달한 인수를 재할당하여 변경해도 arguments 객체에 반영되지 않는다.
+```
+(function (a) {
+  'use strict';
+  // 매개변수에 전달된 인수를 재할당하여 변경
+  a = 2;
+
+  // 변경된 인수가 arguments 객체에 반영되지 않는다.
+  console.log(arguments); // { 0: 1, length: 1 }
+}(1));
 ```
