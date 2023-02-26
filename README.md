@@ -3011,3 +3011,479 @@ strict mode에서는 매개변수에 전달한 인수를 재할당하여 변경�
   console.log(arguments); // { 0: 1, length: 1 }
 }(1));
 ```
+
+# 21장 빌트인 객체
+## 21.1 자바스크립트 객체의 분류
+자바스크립트 객체는 다음 3개의 객체로 분류할 수 있다.
+
+* 표준 빌트인 객체: ECMAScript 사양에 정의된 객체 . 애플리케이션 전역의 공통 기능을 제공한다. 자바스크립트 런타임 환경에 관계없이 사용 가능하며, 전역 객체의 프로퍼티로 제공된다.
+
+* 호스트 객체: 자바스크립트 런타임 환경에서 추가로 제공하는 객체.
+
+* 사용자 정의 객체: 사용자가 직접 정의한 객체
+
+## 21.2 표준 빌트인 객체
+
+자바스크립트는 40여개의 표준 빌트인 객체를 제공한다. `Math`, `Reflect`, `JSON`을 제외한 표준 빌트인 객체는 모두 인스턴스를 생성할 수 있는 생성자 함수 객체다. 표준 빌트인 객체가 생성자 함수 객체이면 프로토타입 메서드와 정적 메서드 둘 다 제공하고, 생성자 함수 객체가 아니라면 정적 메서드만 제공한다.
+
+```
+// String 생성자 함수에 의한 String 객체 생성
+const strObj = new String('Lee'); // String {"Lee"}
+console.log(typeof strObj);       // object
+
+// Number 생성자 함수에 의한 Number 객체 생성
+const numObj = new Number(123); // Number {123}
+console.log(typeof numObj);     // object
+
+// Boolean 생성자 함수에 의한 Boolean 객체 생성
+const boolObj= new Boolean(true); // Boolean {true}
+console.log(typeof boolObj);      // object
+
+// Function 생성자 함수에 의한 Function 객체(함수) 생성
+const func = new Function('x', 'return x * x'); // ƒ anonymous(x )
+console.log(typeof func);                       // function
+
+// Array 생성자 함수에 의한 Array 객체(배열) 생성
+const arr = new Array(1, 2, 3); // (3) [1, 2, 3]
+console.log(typeof arr);        // object
+
+// RegExp 생성자 함수에 의한 RegExp 객체(정규 표현식) 생성
+const regExp = new RegExp(/ab+c/i); // /ab+c/i
+console.log(typeof regExp);         // object
+
+// Date 생성자 함수에 의한 Date 객체 생성
+const date = new Date();  // Fri May 08 2020 10:43:25 GMT+0900 (대한민국 표준시)
+console.log(typeof date); // object
+```
+
+표준 빌트인 객체이면서 생성자 함수가 생성한 인스턴스의 프로토타입은 표준 빌트인 객체의 prototype에 바인딩 된 객체이다.
+```
+// String 생성자 함수에 의한 String 객체 생성
+const strObj = new String('Lee'); // String {"Lee"}
+
+// String 생성자 함수를 통해 생성한 strObj 객체의 프로토타입은 String.prototype이다.
+console.log(Object.getPrototypeOf(strObj) === String.prototype); // true
+```
+표준 빌트인 객체의 prototype에 바인딩된 객체는 다양한 기능의 빌트인 프로토타입 메서드를 제공한다. 또한 정적 메서드 또한 제공한다.
+```
+// Number 생성자 함수에 의한 Number 객체 생성
+const numObj = new Number(1.5); // Number {1.5}
+
+// toFixed는 Number.prototype의 프로토타입 메서드다.
+// Number.prototype.toFixed는 소수점 자리를 반올림하여 문자열로 반환한다.
+console.log(numObj.toFixed()); // 2
+
+// isInteger는 Number의 정적 메서드다.
+// Number.isInteger는 인수가 정수(integer)인지 검사하여 그 결과를 Boolean으로 반환한다.
+console.log(Number.isInteger(0.5)); // false
+```
+
+## 21.3 원시값과 래퍼 객체
+원시값에 객체처럼 접근하면 JS엔진이 일시적, 암묵적으로 연관된 객체를 생성하여 그 객체로 프로퍼티에 접근 혹은 메서드를 호출하고 다시 원시값으로 되돌린다. **이 때, 불리며 임시적으로 생성되는 객체를 래퍼 객체**라고 한다.
+
+문자열에 대해 마침표 표기법으로 접근하면 String  생성자 함수의 인스턴스가 생성되고, 문자열은 래퍼 객체의 [[StringData]] 내부 슬롯에 할당된다.
+```
+const str = 'hi';
+
+// 원시 타입인 문자열이 래퍼 객체인 String 인스턴스로 변환된다.
+console.log(str.length); // 2
+console.log(str.toUpperCase()); // HI
+
+// 래퍼 객체로 프로퍼티에 접근하거나 메서드를 호출한 후, 다시 원시값으로 되돌린다.
+console.log(typeof str); // string
+```
+
+되돌아간 래퍼 객체는 가비지 컬렉션의 대상이 된다.
+
+이처럼 문자열, 숫자, 불리언, 심벌은 암묵적으로 생성되는 래퍼 객체에 의해 객체처럼 사용할 수 있으며, 따라서 String, Number, Boolean 생성자 함수를 new 연산자와 함께 호출해 인스턴스를 생성할 필요가 없다.
+
+## 21.4 전역 객체
+전역 객체는 JS엔진에 의해 어떤 객체보다도 먼저 생성되는 특수한 객체이며, 어떤 객체에도 속하지 않은 최상위 객체다. 런타임 환경에 따라 이름이 제각각인데, 브라우저는 window, node 환경에서는 global이라 불린다.
+
+* 전역객체는 표준 빌트인 객체와 환경에 따른 호스트 객체, var 키워드로 선언한 전역 변수와 전역 함수를 프로퍼티로 가진다. 전역 객체 자신은 누구의 프로퍼티도 아니며, 단순히 계층 구조상 표준 빌트인 객체와 호스트 객체를 프로퍼티로 소유한다.
+
+전역 객체의 특징
+* 개발자 임의로 생성할 수 없다.
+* 프로퍼티를 참조할 때 window를 생략할 수 있다.
+* 모든 표준 빌트인 객체를 프로퍼티로 가진다.
+* 런타임에 따라 프로퍼티와 메서드를 가진다.(호스트 객체)
+* 브라우저 환경의 모든 JS코드는 하나의 전역 객체를 공유한. 스크립트를 분리해도 마찬가지이다.
+
+
+
+### 21.4.1 빌트인 전역 프로퍼티
+전역 객체의 프로퍼티를 의미한다. 주로 어플리케이션 전역에서 사용하는 값을 제공한다.
+
+* Infinity: 무한대를 나타내는 숫자값.
+```
+// 전역 프로퍼티는 window를 생략하고 참조할 수 있다.
+console.log(window.Infinity === Infinity); // true
+
+// 양의 무한대
+console.log(3/0);  // Infinity
+// 음의 무한대
+console.log(-3/0); // -Infinity
+// Infinity는 숫자값이다.
+console.log(typeof Infinity); // number
+```
+
+* NaN: 숫자가 아님을 나타내는 숫자값. Number.NaN 프로퍼티와 같다.
+```
+console.log(window.NaN); // NaN
+
+console.log(Number('xyz')); // NaN
+console.log(1 * 'string');  // NaN
+console.log(typeof NaN);    // number
+```
+
+* undefined: 원시값 undefined를 값으로 가지는 프로퍼티
+```
+console.log(window.undefined); // undefined
+
+var foo;
+console.log(foo); // undefined
+console.log(typeof undefined); // undefined
+```
+
+## 21.4.2 빌트인 전역 함수
+애플리케이션 전역에서 호출할 수 있는 전역 객체의 메서드
+
+* eval : JS코드를 나타내는 문자열을 인수로 전달받는다. 전달받은 코드가 표현식이라면 이를 런타임에 평가해 값을 생성하고, 아니라면 코드를 런타임에 실행한다. 여러 문으로 이루어진 코드라면 모든 문을 실행하고 마지막 결과값을 반환한다.
+
+```
+// 표현식인 문
+eval('1 + 2;'); // -> 3
+// 표현식이 아닌 문
+eval('var x = 5;'); // -> undefined
+
+// eval 함수에 의해 런타임에 변수 선언문이 실행되어 x 변수가 선언되었다.
+console.log(x); // 5
+
+// 객체 리터럴은 반드시 괄호로 둘러싼다.
+const o = eval('({ a: 1 })');
+console.log(o); // {a: 1}
+
+// 함수 리터럴은 반드시 괄호로 둘러싼다.
+const f = eval('(function() { return 1; })');
+console.log(f()); // 1
+```
+```
+console.log(eval('1 + 2; 3 + 4;')); // 7
+```
+
+또한 자신이 호출된 위치에 해당하는 기존의 스코프를 런타임에 동적으로 수정한다.
+```
+const x = 1;
+
+function foo() {
+  // eval 함수는 런타임에 foo 함수의 스코프를 동적으로 수정한다.
+  eval('var x = 2;');
+  console.log(x); // 2
+}
+
+foo();
+console.log(x); // 1
+```
+eval에 전달된 코드는 원래 그 위치에 존재하던 코드처럼 작동한다.
+
+단, strict mode에서는 기존의 스코프를 수정하지 않고, 자신의 자체적인 스코프를 생성한다.
+
+또한 인수로 let, const를 전달받았다면, 암묵적으로 strict mode가 적용된다.
+
+```
+const x = 1;
+
+function foo() {
+  eval('var x = 2; console.log(x);'); // 2
+  // let, const 키워드를 사용한 변수 선언문은 strict mode가 적용된다.
+  eval('const x = 3; console.log(x);'); // 3
+  console.log(x); // 2
+}
+
+foo();
+console.log(x); // 1
+```
+
+eval함수는 보안에 매우 취약하며 최적화 또한 진행되지 않기 때문에 속도가 느리다. 따라서 사용을 금지해야 한다.
+
+* isFinite: 전달받은 인자가 정상적인 유한수이면 true를 반환하고, 아니라면 false를 반환한다. 인자를 숫자로 바꿔 평가하며, 숫자로 평가되지 않는 NaN인 경우 false를 반환한다.
+```
+// 인수가 유한수이면 true를 반환한다.
+isFinite(0);    // -> true
+isFinite(2e64); // -> true
+isFinite('10'); // -> true: '10' → 10
+isFinite(null); // -> true: null → 0
+
+// 인수가 무한수 또는 NaN으로 평가되는 값이라면 false를 반환한다.
+isFinite(Infinity);  // -> false
+isFinite(-Infinity); // -> false
+
+// 인수가 NaN으로 평가되는 값이라면 false를 반환한다.
+isFinite(NaN);     // -> false
+isFinite('Hello'); // -> false
+isFinite('2005/12/12'); // -> false
+
+console.log(+null); // 0
+```
+
+* isNaN: 전달받은 인수가 NaN인지를 검사해 불리언으로 반환한다. 인수를 숫자로 강제로 타입 변환한다.
+```
+// 숫자
+isNaN(NaN); // -> true
+isNaN(10);  // -> false
+
+// 문자열
+isNaN('blabla'); // -> true: 'blabla' => NaN
+isNaN('10');     // -> false: '10' => 10
+isNaN('10.12');  // -> false: '10.12' => 10.12
+isNaN('');       // -> false: '' => 0
+isNaN(' ');      // -> false: ' ' => 0
+
+// 불리언
+isNaN(true); // -> false: true → 1
+isNaN(null); // -> false: null → 0
+
+// undefined
+isNaN(undefined); // -> true: undefined => NaN
+
+// 객체
+isNaN({}); // -> true: {} => NaN
+
+// date
+isNaN(new Date());            // -> false: new Date() => Number
+isNaN(new Date().toString()); // -> true:  String => NaN
+```
+
+* parseFloat: 전달받은 문자열 인수를 실수로 해석하여 반환한다.
+
+```
+// 문자열을 실수로 해석하여 반환한다.
+parseFloat('3.14');  // -> 3.14
+parseFloat('10.00'); // -> 10
+
+// 공백으로 구분된 문자열은 첫 번째 문자열만 변환한다.
+parseFloat('34 45 66'); // -> 34
+parseFloat('40 years'); // -> 40
+
+// 첫 번째 문자열을 숫자로 변환할 수 없다면 NaN을 반환한다.
+parseFloat('He was 40'); // -> NaN
+
+// 앞뒤 공백은 무시된다.
+parseFloat(' 60 '); // -> 60
+```
+
+* parseInt: 전달받은 문자열 인수를 정수로 해석해 반환한다.
+
+```
+// 문자열을 정수로 해석하여 반환한다.
+parseInt('10');     // -> 10
+parseInt('10.123'); // -> 10
+```
+
+인수를 문자열로 변환하고, 정수로 해석하여 반환한다.
+```
+parseInt(10);     // -> 10
+parseInt(10.123); // -> 10
+```
+
+두번째 인수로 진법을 나타내는 기수를 전달할 수 있다. 반환값은 언제나 10진수이며, 기수를 생략하면 10진수로 해석하여 반환한다.
+```
+// 10'을 10진수로 해석하고 그 결과를 10진수 정수로 반환한다
+parseInt('10'); // -> 10
+// '10'을 2진수로 해석하고 그 결과를 10진수 정수로 반환한다
+parseInt('10', 2); // -> 2
+// '10'을 8진수로 해석하고 그 결과를 10진수 정수로 반환한다
+parseInt('10', 8); // -> 8
+// '10'을 16진수로 해석하고 그 결과를 10진수 정수로 반환한다
+parseInt('10', 16); // -> 16
+```
+
+기수를 지정하여 10진수 숫자를 해당 기수의 문자열로 변환하고 싶으면 Number.prototype.toString 메서드를 사용한다.
+```
+const x = 15;
+
+// 10진수 15를 2진수로 변환하여 그 결과를 문자열로 반환한다.
+x.toString(2); // -> '1111'
+// 문자열 '1111'을 2진수로 해석하고 그 결과를 10진수 정수로 반환한다
+parseInt(x.toString(2), 2); // -> 15
+
+// 10진수 15를 8진수로 변환하여 그 결과를 문자열로 반환한다.
+x.toString(8); // -> '17'
+// 문자열 '17'을 8진수로 해석하고 그 결과를 10진수 정수로 반환한다
+parseInt(x.toString(8), 8); // -> 15
+
+// 10진수 15를 16진수로 변환하여 그 결과를 문자열로 반환한다.
+x.toString(16); // -> 'f'
+// 문자열 'f'를 16진수로 해석하고 그 결과를 10진수 정수로 반환한다
+parseInt(x.toString(8), 8); // -> 15
+
+// 숫자값을 문자열로 변환한다.
+x.toString(); // -> '15'
+// 문자열 '15'를 10진수로 해석하고 그 결과를 10진수 정수로 반환한다
+parseInt(x.toString()); // -> 15
+```
+
+두번째 인수를 생략해도, 첫번째 인수의 전달값이 '0x' 혹은 '0X' 로 시작하는 16진수 리터럴이면 16진수로 해석하여 10진수 정수로 반환한다.
+```
+// 16진수 리터럴 '0xf'를 16진수로 해석하고 10진수 정수로 그 결과를 반환한다.
+parseInt('0xf'); // -> 15
+// 위 코드와 같다.
+parseInt('f', 16); // -> 15
+```
+
+하지만 위의 경우 2진수 리터럴과 8진수 리터럴은 제대로 해석하지 못한다. ES5에서는 0으로 시작하는 숫자를 8진수로 여겼지만, ES6에서는 10진수로 여기기 때문이다. 따라서 8진수 해석을 위해선 반드시 지정이 필요하다.
+```
+// 2진수 리터럴(0b로 시작)은 제대로 해석하지 못한다. 0 이후가 무시된다.
+parseInt('0b10'); // -> 0
+// 8진수 리터럴(ES6에서 도입. 0o로 시작)은 제대로 해석하지 못한다. 0 이후가 무시된다.
+parseInt('0o10'); // -> 0
+
+// 문자열 '10'을 2진수로 해석한다.
+parseInt('10', 2); // -> 2
+// 문자열 '10'을 8진수로 해석한다.
+parseInt('10', 8); // -> 8
+```
+
+숫자로 변환될 수 없으면 NaN을 반환하다.
+```
+// 'A'는 10진수로 해석할 수 없다.
+parseInt('A0'); // -> NaN
+// '2'는 2진수로 해석할 수 없다.
+parseInt('20', 2); // -> NaN
+```
+
+첫째인자의 두번째 문자부터 숫자가 아닌 문자와 마주치면 무시되며, 해석된 정수값만 반환된다.
+```
+// 10진수로 해석할 수 없는 'A' 이후의 문자는 모두 무시된다.
+parseInt('1A0'); // -> 1
+// 2진수로 해석할 수 없는 '2' 이후의 문자는 모두 무시된다.
+parseInt('102', 2); // -> 2
+// 8진수로 해석할 수 없는 '8' 이후의 문자는 모두 무시된다.
+parseInt('58', 8); // -> 5
+// 16진수로 해석할 수 없는 'G' 이후의 문자는 모두 무시된다.
+parseInt('FG', 16); // -> 15
+```
+공백이 있다면 첫번쨰 문자열만 해석해 앞뒤 공백은 무시된다.
+```
+// 공백으로 구분된 문자열은 첫 번째 문자열만 변환한다.
+parseInt('34 45 66'); // -> 34
+parseInt('40 years'); // -> 40
+// 첫 번째 문자열을 숫자로 변환할 수 없다면 NaN을 반환한다.
+parseInt('He was 40'); // -> NaN
+// 앞뒤 공백은 무시된다.
+parseInt(' 60 '); // -> 60
+```
+
+* encodeURI / decodeURI: 완전한 URI를 전달받아 이스케이프 처리를 위해 인코딩한다.
+
+인코딩이란 URI문자들을 이스케이프 처리를 하는 것을 말한다.
+> 이스케이프 처리: 네트워크로 정보를 공유할 때 어떤 시스템에서도 읽을 수 있게 아스키 코드로 변환하는 것.
+
+URL은 아스키 문자 셋으로만 구성되어야 하며 한글을 포함한 대부분의 외국어나 아스키 셋에 없는 경우 URL에 포함될 수 없다.
+```
+// 완전한 URI
+const uri = 'http://example.com?name=이웅모&job=programmer&teacher';
+
+// encodeURI 함수는 완전한 URI를 전달받아 이스케이프 처리를 위해 인코딩한다.
+const enc = encodeURI(uri);
+console.log(enc);
+// http://example.com?name=%EC%9D%B4%EC%9B%85%EB%AA%A8&job=programmer&teacher
+```
+
+decodeURI는 인코딩된 URI를 전달받아 이스케이프 처리 전으로 디코딩한다.
+```
+const uri = 'http://example.com?name=이웅모&job=programmer&teacher';
+
+// encodeURI 함수는 완전한 URI를 전달받아 이스케이프 처리를 위해 인코딩한다.
+const enc = encodeURI(uri);
+console.log(enc);
+// http://example.com?name=%EC%9D%B4%EC%9B%85%EB%AA%A8&job=programmer&teacher
+
+// decodeURI 함수는 인코딩된 완전한 URI를 전달받아 이스케이프 처리 이전으로 디코딩한다.
+const dec = decodeURI(enc);
+console.log(dec);
+// http://example.com?name=이웅모&job=programmer&teacher
+```
+
+* encodeURIComponent / decodeURIComponent: encodeURIComponent함수는 URI 구성 요소를 인수로 전달받아 인코딩한다. decodeURIComponent함수는 매개변수로 전달된 URI 구성 요소를 디코딩한다.
+
+encodeURIComponent는 문자열을 URI의 구성요소인 쿼리 스트링의 일부로 간주하며, 따라서 구분자인 =, ? & 도 인코딩한다.
+```
+// URI의 쿼리 스트링
+const uriComp = 'name=이웅모&job=programmer&teacher';
+
+// encodeURIComponent 함수는 인수로 전달받은 문자열을 URI의 구성요소인 쿼리 스트링의 일부로 간주한다.
+// 따라서 쿼리 스트링 구분자로 사용되는 =, ?, &까지 인코딩한다.
+let enc = encodeURIComponent(uriComp);
+console.log(enc);
+// name%3D%EC%9D%B4%EC%9B%85%EB%AA%A8%26job%3Dprogrammer%26teacher
+
+let dec = decodeURIComponent(enc);
+console.log(dec);
+// 이웅모&job=programmer&teacher
+
+// encodeURI 함수는 인수로 전달받은 문자열을 완전한 URI로 간주한다.
+// 따라서 쿼리 스트링 구분자로 사용되는 =, ?, &를 인코딩하지 않는다.
+enc = encodeURI(uriComp);
+console.log(enc);
+// name=%EC%9D%B4%EC%9B%85%EB%AA%A8&job=programmer&teacher
+
+dec = decodeURI(enc);
+console.log(dec);
+// name=이웅모&job=programmer&teacher
+```
+
+### 21.4.3 암묵적 전역
+선언되지 않은 식별자가 마치 전역적으로 선언된것처럼 작동하는 현상
+```
+var x = 10; // 전역 변수
+
+function foo () {
+  // 선언하지 않은 식별자에 값을 할당
+  y = 20; // window.y = 20;
+}
+foo();
+
+// 선언하지 않은 식별자 y를 전역에서 참조할 수 있다.
+console.log(x + y); // 30
+```
+
+실제로는 변수가 아니라 전역 객체의 프로퍼티로 추가되었을 뿐이다. 따라서 호이스팅은 발생하지 않는다.
+```
+// 전역 변수 x는 호이스팅이 발생한다.
+console.log(x); // undefined
+// 전역 변수가 아니라 단지 전역 객체의 프로퍼티인 y는 호이스팅이 발생하지 않는다.
+console.log(y); // ReferenceError: y is not defined
+
+var x = 10; // 전역 변수
+
+function foo () {
+  // 선언하지 않은 식별자에 값을 할당
+  y = 20; // window.y = 20;
+}
+foo();
+
+// 선언하지 않은 식별자 y를 전역에서 참조할 수 있다.
+console.log(x + y); // 30
+```
+또한 암묵적 전역이 적용된 변수는 delete 연산자로 삭제할 수 있다.
+```
+var x = 10; // 전역 변수
+
+function foo () {
+  // 선언하지 않은 식별자에 값을 할당
+  y = 20; // window.y = 20;
+  console.log(x + y);
+}
+
+foo(); // 30
+
+console.log(window.x); // 10
+console.log(window.y); // 20
+
+delete x; // 전역 변수는 삭제되지 않는다.
+delete y; // 프로퍼티는 삭제된다.
+
+console.log(window.x); // 10
+console.log(window.y); // undefined
+```
