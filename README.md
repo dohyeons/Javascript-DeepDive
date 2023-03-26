@@ -5725,3 +5725,1349 @@ console.log(sum.length); // 1
 sum(1);    // Arguments { '0': 1 }
 sum(1, 2); // Arguments { '0': 1, '1': 2 }
 ```
+
+# 27장 배열
+
+## 27.1 배열일나?
+
+> 여러개의 값을 순차적으로 나열한 자료구조
+
+- 요소: 배열이 가지고 있는 값
+- 인덱스: 배열에서 요소 자신의 위치. 0에서부터 시작한다.
+
+요소에 접근할 때는 대괄호 표기법을 사용한다.
+
+```
+const arr = ['apple', 'banana', 'orange'];
+
+arr[0] // -> 'apple'
+arr[1] // -> 'banana'
+arr[2] // -> 'orange'
+```
+
+배열은 배열 리터럴, `Array` 생성자 함수, `Array.of`, `Array.from` 메서드로 생성할 수 있다. 생성자 함수는 `Array`이며, 프로토타입 객체는 `Array.prototype`이다.
+
+배열은 객체지만, 일반 객체와 구별되는 특징이 있다.
+|구분|객체|배열|
+|--|--|--|
+|구조|프로퍼티 키와 프로퍼티 값|인덱스와 요소|
+|값의 참조|프로퍼티 키|인덱스|
+|값의 순서|X|O|
+|`length`프로퍼티|X|O|
+
+이중 가장 명확한 차이는 값의 순서와 `length`프로퍼티이다. 배열은 반복문을 통해 접근하기 쉬운 구조이다.
+
+```
+const arr = [1, 2, 3];
+
+// 반복문으로 자료 구조를 순서대로 순회하기 위해서는 자료 구조의 요소에 순서대로
+// 접근할 수 있어야 하며 자료 구조의 길이를 알 수 있어야 한다.
+for (let i = 0; i < arr.length; i++) {
+  console.log(arr[i]); // 1 2 3
+}
+```
+
+## 27.2 JS의 배열은 배열이 아니다.
+
+자료구조에서 말하는 배열은 동일 크기의 메모리 공간이 빈틈없이 나열된 자료구조를 말한다. 즉, 하나의 데이터 타입으로 통일되어 있으며 서로 연속적으로 인접해 있다. 이를 **밀집 배열**이라고 한다. 이러한 일반적 배열은 빈틈없이 연속적으로 이어져 있고, 인덱스를 통해 단 한번의 연산만으로 요소에 접근할 수 있다. 효율적이고 고속이다.
+
+> 검색 대상 요소의 메모리 주소 = 배열의 시작 메모리 주소 + 인덱스 \* 요소의 바이트 수
+
+하지만 정렬되지 않은 배열에서는 검색하려면 특정 요소를 검색하기 위해 그 요소까지 차례대로 다 뒤져봐야 한다.
+
+```
+// 선형 검색을 통해 배열(array)에 특정 요소(target)가 존재하는지 확인한다.
+// 배열에 특정 요소가 존재하면 특정 요소의 인덱스를 반환하고, 존재하지 않으면 -1을 반환한다.
+function linearSearch(array, target) {
+  const length = array.length;
+
+  for (let i = 0; i < length; i++) {
+    if (array[i] === target) return i;
+  }
+
+  return -1;
+}
+
+console.log(linearSearch([1, 2, 3, 4, 5, 6], 3)); // 2
+console.log(linearSearch([1, 2, 3, 4, 5, 6], 0)); // -1
+```
+
+또한, 배열에 요소를 삽입 혹은 삭제할 경우 배열을 연속적으로 유지하기 위해 요소를 이동시켜야 한다.
+
+JS배열은 앞에서 말한 배열과는 다르다. 각각의 메모리 공간의 크기가 같지 않아도 되며, 연속적으로 이어져 있지 않아도 된다. 이렇게 배열의 요소가 연속적이지 않은 배열을 **희소 배열**이라고 한다.
+이처럼 **JS의 배열은 일반적인 배열의 동작을 흉내 낸 객체이다!!**
+
+```
+// "16.2. 프로퍼티 어트리뷰트와 프로퍼티 디스크립터 객체" 참고
+console.log(Object.getOwnPropertyDescriptors([1, 2, 3]));
+/*
+{
+  '0': {value: 1, writable: true, enumerable: true, configurable: true}
+  '1': {value: 2, writable: true, enumerable: true, configurable: true}
+  '2': {value: 3, writable: true, enumerable: true, configurable: true}
+  length: {value: 3, writable: true, enumerable: false, configurable: false}
+}
+*/
+```
+
+이처럼 JS의 배열은 인덱스 나타내는 문자열을 프로퍼티 키로 가지며, `length` 프로퍼티를 가지는 특수한 객체이다. JS 배열의 요소는 사실 프로퍼티 값이다. 프로퍼티 값은 JS에서 사용하는 모든 값이 될 수 있으므로 어떤 타입이라도 배열의 요소가 될 수 있다.
+
+```
+const arr = [
+  'string',
+  10,
+  true,
+  null,
+  undefined,
+  NaN,
+  Infinity,
+  [ ],
+  { },
+  function () {}
+];
+```
+
+일반 배열과 JS배열의 장단점은 다음과 같다.
+
+- 일반배열: 인덱스로 요소에 빠르게 접근 가능. 그러나 특정 요소를 검색하거나 요소를 삽입 또는 삭제하는 경우엔 효율적이지 않다.
+
+- JS배열은 해시 테이블로 구현된 객체여서 성능적인 면에서는 일반 배열보다 느리다. 하지만 특정 요소 검색, 요소 삽입 혹은 삭제에서는 일반 배열보다 빠른 성능을 기대할 수 있다.
+
+성능적은 부분을 개선하기 위해 JS배열은 객체와 구별해 좀 더 배열처럼 작동하도록 최적화 했고, 배열이 객체보다 약 2배정도 빠른 속도를 가진다.
+
+```
+const arr = [];
+
+console.time('Array Performance Test');
+
+for (let i = 0; i < 10000000; i++) {
+  arr[i] = i;
+}
+console.timeEnd('Array Performance Test');
+// 약 340ms
+
+const obj = {};
+
+console.time('Object Performance Test');
+
+for (let i = 0; i < 10000000; i++) {
+  obj[i] = i;
+}
+
+console.timeEnd('Object Performance Test');
+// 약 600ms
+```
+
+## 27.3 length 프로퍼티와 희소 배열
+
+`length`프로퍼티는 배열의 길이이다. 즉, 0이상의 정수이며, 요소가 1개 이상 있는 경우 인덱스 + 1의 값을 가진다.
+
+```
+[].length        // -> 0
+[1, 2, 3].length // -> 3
+```
+
+배열은 요소를 최대 40억개...정도 가질 수 있다.
+
+`length`프로퍼티는 배열에 요소를 추가하거나 삭제하면 자동 갱신된다.
+
+```
+const arr = [1, 2, 3];
+console.log(arr.length); // 3
+
+// 요소 추가
+arr.push(4);
+// 요소를 추가하면 length 프로퍼티의 값이 자동 갱신된다.
+console.log(arr.length); // 4
+
+// 요소 삭제
+arr.pop();
+// 요소를 삭제하면 length 프로퍼티의 값이 자동 갱신된다.
+console.log(arr.length); // 3
+```
+
+`length`프로퍼티는 명시적으로 임의 값을 할당할 수 있고, 원래의 값보다 작은 값을 할당하면 배열의 길이가 줄어든다.
+
+```
+const arr = [1, 2, 3, 4, 5];
+
+// 현재 length 프로퍼티 값인 5보다 작은 숫자 값 3을 length 프로퍼티에 할당
+arr.length = 3;
+
+// 배열의 길이가 5에서 3으로 줄어든다.
+console.log(arr); // [1, 2, 3]
+```
+
+그러나 원래 값보다 더 큰 값을 할당하면? `length`프로퍼티 값은 변경되어도 실제 배열의 길이는 그대로이다.
+
+```
+const arr = [1];
+
+// 현재 length 프로퍼티 값인 1보다 큰 숫자 값 3을 length 프로퍼티에 할당
+arr.length = 3;
+
+// length 프로퍼티 값은 변경되지만 실제로 배열의 길이가 늘어나지는 않는다.
+console.log(arr.length); // 3
+console.log(arr); // [1, empty × 2]
+```
+
+비어있는 요소를 위해 메모리 공간을 확보하지 않으며 빈 요소를 생성하지도 않는다.
+
+```
+console.log(Object.getOwnPropertyDescriptors(arr));
+/*
+{
+  '0': {value: 1, writable: true, enumerable: true, configurable: true},
+  length: {value: 3, writable: true, enumerable: false, configurable: false}
+}
+*/
+```
+
+JS는 이러한 희소 배열을 문법적으로 허용한다.
+
+```
+const sparse = [, 2, , 4];
+
+// 희소 배열의 length 프로퍼티 값은 요소의 개수와 일치하지 않는다.
+console.log(sparse.length); // 4
+console.log(sparse); // [empty, 2, empty, 4]
+
+// 배열 sparse에는 인덱스가 0, 2인 요소가 존재하지 않는다.
+console.log(Object.getOwnPropertyDescriptors(sparse));
+/*
+{
+  '1': { value: 2, writable: true, enumerable: true, configurable: true },
+  '3': { value: 4, writable: true, enumerable: true, configurable: true },
+  length: { value: 4, writable: true, enumerable: false, configurable: false }
+}
+```
+
+**희소 배열의 `length`와 배열의 요소의 개수가 일치하지 않는다. 희소 배열의 `length`는 언제나 실제 요소 개수보다 크다.**
+
+그러나 희소 배열은 사용하지 않는 것이 좋다. 배열의 기본적인 개념에도 어긋나며, 성능상으로도 별로이다. 모던 JS 엔진은 희소배열을 위해 일반적 배열처럼 연속된 메모리 공간을 확보한다. 즉, 빈 값을 위해 확보하는 메모리 공간은 낭비이다. 그러므로 **배열에는 같은 타입의 요소를 연속적으로 위치시키는 것이 최선이다.**
+
+## 27.4 배열 생성
+
+### 27.4.1 배열 리터럴
+
+가장 일반적, 편한 방법이다. 0개 이상의 요소를 쉼표로 구분해 대괄호로 묶는다. 값만 존재한다.
+
+```
+const arr = [1, 2, 3];
+console.log(arr.length); // 3
+```
+
+요소를 추가하지 않으면 `length`프로퍼티 값이 0인 배열이다.
+
+```
+const arr = [];
+console.log(arr.length); // 0
+```
+
+요소를 생략하면 희소 배열이 생성된다.
+
+```
+const arr = [1, , 3]; // 희소 배열
+
+// 희소 배열의 length는 배열의 실제 요소 개수보다 언제나 크다.
+console.log(arr.length); // 3
+console.log(arr);        // [1, empty, 3]
+console.log(arr[1]);     // undefined
+```
+
+### 27.4.2 Array 생성자 함수
+
+`Array`생성자 함수를 통해 생성한다. 인수의 개수에 따라 다르게 동작한다.
+
+- 인수가 1개이고 숫자인 경우 `length`프로퍼티 값이 인수인 배열을 생성한다. 이렇게 생성한 배열은 희소 배열이다.
+
+```
+const arr = new Array(10);
+
+console.log(arr); // [empty × 10]
+console.log(arr.length); // 10
+
+console.log(Object.getOwnPropertyDescriptors(arr));
+/*
+{
+  length: {value: 10, writable: true, enumerable: false, configurable: false}
+}
+```
+
+앞서 말했듯 배열의 요소는 최대 40억개정도 가질 수 있다. 이 범위를 벗어나면 `RangeError`가 발생한다.
+
+```
+// 배열은 요소를 최대 4,294,967,295개 가질 수 있다.
+new Array(4294967295);
+
+// 전달된 인수가 0 ~ 4,294,967,295를 벗어나면 RangeError가 발생한다.
+new Array(4294967296); // RangeError: Invalid array length
+
+// 전달된 인수가 음수이면 에러가 발생한다.
+new Array(-1); // RangeError: Invalid array length
+```
+
+- 전달된 인수가 없는 경우 빈 배열을 생성한다.(=`[]`)
+
+```
+new Array(); // -> []
+```
+
+- 전달된 인수가 2개 이상이거나 숫자가 아닌 경우, 인수를 요소로 가지는 배열을 생성한다.
+
+```
+// 전달된 인수가 2개 이상이면 인수를 요소로 갖는 배열을 생성한다.
+new Array(1, 2, 3); // -> [1, 2, 3]
+
+// 전달된 인수가 1개지만 숫자가 아니면 인수를 요소로 갖는 배열을 생성한다.
+new Array({}); // -> [{}]
+```
+
+- `new` 키워드 없이 호출해도 생성자 함수로 동작한다. 생성자 함수 내부에서 `new.target`을 확인하기 때문이다.
+
+```
+Array(1, 2, 3); // -> [1, 2, 3]
+```
+
+### 27.4.3 Array.of
+
+`Array.of`는 인수를 요소로 가지는 배열을 생성한다. 인수가 1개이고 숫자이더라도 인수를 요소로 가진다.
+
+```
+// 전달된 인수가 1개이고 숫자이더라도 인수를 요소로 갖는 배열을 생성한다.
+Array.of(1); // -> [1]
+
+Array.of(1, 2, 3); // -> [1, 2, 3]
+
+Array.of('string'); // -> ['string']
+```
+
+### 27.4.4 Array.from
+
+유사 배열 객체 또는 이터러블 객체를 인수로 전달받아 배열로 변환해 반환한다.
+
+```
+// 유사 배열 객체를 변환하여 배열을 생성한다.
+Array.from({ length: 2, 0: 'a', 1: 'b' }); // -> ['a', 'b']
+
+// 이터러블을 변환하여 배열을 생성한다. 문자열은 이터러블이다.
+Array.from('Hello'); // -> ['H', 'e', 'l', 'l', 'o']
+```
+
+두번째 인수로 전달한 콜백 함수를 통해 값을 만들며 요소를 채울 수 있다. 두번째 인수로 전달한 콜백 함수에 첫쨰 인수로 만들어진 배열의 요소값과 인덱스를 순차적으로 전달하면서 호출하고, 콜백 함수의 반환값으로 구성된 배열을 반환한다.
+
+```
+// Array.from에 length만 존재하는 유사 배열 객체를 전달하면 undefined를 요소로 채운다.
+Array.from({ length: 3 }); // -> [undefined, undefined, undefined]
+
+// Array.from은 두 번째 인수로 전달한 콜백 함수의 반환값으로 구성된 배열을 반환한다.
+Array.from({ length: 3 }, (_, i) => i); // -> [0, 1, 2]
+```
+
+## 27.5 배열 요소의 참조
+
+대괄호 표기법으로 요소를 참조한다. 대괄호 안에는 인덱스가 와야한다. 정수로 평가되는 표현식을 인덱스 대신 사용할 수 있다.
+
+```
+const arr = [1, 2];
+
+// 인덱스가 0인 요소를 참조
+console.log(arr[0]); // 1
+// 인덱스가 1인 요소를 참조
+console.log(arr[1]); // 2
+```
+
+존재하지 않는 요소는 `undefined`를 반환한다.
+
+```
+const arr = [1, 2];
+
+// 인덱스가 2인 요소를 참조. 배열 arr에는 인덱스가 2인 요소가 존재하지 않는다.
+console.log(arr[2]); // undefined
+```
+
+이는 배열이 프로퍼티 키로 문자열 형태의 인덱스를 가지는 객체이기 때문이다. 따라서 희소 배열에도 존재하지 않는 요소에는 `undefined`를 반환한다.
+
+```
+// 희소 배열
+const arr = [1, , 3];
+
+// 배열 arr에는 인덱스가 1인 요소가 존재하지 않는다.
+console.log(Object.getOwnPropertyDescriptors(arr));
+/*
+{
+  '0': {value: 1, writable: true, enumerable: true, configurable: true},
+  '2': {value: 3, writable: true, enumerable: true, configurable: true},
+  length: {value: 3, writable: true, enumerable: false, configurable: false}
+*/
+
+// 존재하지 않는 요소를 참조하면 undefined가 반환된다.
+console.log(arr[1]); // undefined
+console.log(arr[3]); // undefined
+
+```
+
+## 27.6 배열 요소의 추가와 갱신
+
+배열에도 요소를 동적으로 추가할 수 있다. 존재하지 않는 인덱스에 값을 할당하면 요소가 추가되고, `length`프로퍼티 값은 자동 갱신된다.
+
+```
+const arr = [0];
+
+// 배열 요소의 추가
+arr[1] = 1;
+
+console.log(arr); // [0, 1]
+console.log(arr.length); // 2
+```
+
+희소 배열을 만들 수도 있다. 단, 이 경우에 명시적으로 값을 할당하지 않으면 요소는 생성되지 않는다.
+
+```
+arr[100] = 100;
+
+console.log(arr); // [0, 1, empty × 98, 100]
+console.log(arr.length); // 101
+
+// 명시적으로 값을 할당하지 않은 요소는 생성되지 않는다.
+console.log(Object.getOwnPropertyDescriptors(arr));
+/*
+{
+  '0': {value: 0, writable: true, enumerable: true, configurable: true},
+  '1': {value: 1, writable: true, enumerable: true, configurable: true},
+  '100': {value: 100, writable: true, enumerable: true, configurable: true},
+  length: {value: 101, writable: true, enumerable: false, configurable: false}
+*/
+```
+
+이미 존재하는 요소에 재할당하면 값이 갱신된다.
+
+```
+// 요소값의 갱신
+arr[1] = 10;
+
+console.log(arr); // [0, 10, empty × 98, 100]
+```
+
+인덱스를 정수 값이 아닌 다른 값으로 사용하면 프로퍼티가 생성되며, `length`프로퍼티에는 영향을 주지 않는다.
+
+```
+const arr = [];
+
+// 배열 요소의 추가
+arr[0] = 1;
+arr['1'] = 2;
+
+// 프로퍼티 추가
+arr['foo'] = 3;
+arr.bar = 4;
+arr[1.1] = 5;
+arr[-1] = 6;
+
+console.log(arr); // [1, 2, foo: 3, bar: 4, '1.1': 5, '-1': 6]
+
+// 프로퍼티는 length에 영향을 주지 않는다.
+console.log(arr.length); // 2
+```
+
+## 27.7 배열 요소의 삭제
+
+`delete`연산자를 사용할 수 있다.
+
+```
+const arr = [1, 2, 3];
+
+// 배열 요소의 삭제
+delete arr[1];
+console.log(arr); // [1, empty, 3]
+
+// length 프로퍼티에 영향을 주지 않는다. 즉, 희소 배열이 된다.
+console.log(arr.length); // 3
+```
+
+`delete`연산자는 희소 배열을 만들기 때문에 사용하지 않는 것이 좋다. 배열의 요소를 완전 삭제하려면 `Array.prototype.splice`메서드를 사용하는 것이 좋다.
+
+```
+const arr = [1, 2, 3];
+
+// Array.prototype.splice(삭제를 시작할 인덱스, 삭제할 요소 수)
+// arr[1]부터 1개의 요소를 제거
+arr.splice(1, 1);
+console.log(arr); // [1, 3]
+
+// length 프로퍼티가 자동 갱신된다.
+console.log(arr.length); // 2
+```
+
+## 27.8 배열 메서드
+
+`Array`생성자 함수는 정적 메서드를, `Array.prototype`은 프로토타입 메서드를 제공한다. 또한 배열에는 **원본 배열을 변경하는 메서드**와 **새로운 배열을 생성하여 반환하는 메서드**가 있다. 가급적 원본 배열을 변경하지 않는 메서드를 사용하자...!
+
+#### 27.8.1 Array.isArray
+
+> 전달된 인수가 배열이면 `true`, 아니면 `false`를 전달한다.
+
+```
+
+// true
+Array.isArray([]);
+Array.isArray([1, 2]);
+Array.isArray(new Array());
+
+// false
+Array.isArray();
+Array.isArray({});
+Array.isArray(null);
+Array.isArray(undefined);
+Array.isArray(1);
+Array.isArray('Array');
+Array.isArray(true);
+Array.isArray(false);
+Array.isArray({ 0: 1, length: 1 })
+```
+
+#### 27.8.2 Array.prototype.indexOf
+
+> 배열에서 인수로 전달된 요소를 검색해 인덱스를 반환한다.
+
+- 중복 요소가 여러개면 첫번째로 그 중 가장 빠른 인덱스를 반환
+- 없다면 -1을 반환한다.
+
+```
+const arr = [1, 2, 2, 3];
+
+// 배열 arr에서 요소 2를 검색하여 첫 번째로 검색된 요소의 인덱스를 반환한다.
+arr.indexOf(2);    // -> 1
+// 배열 arr에 요소 4가 없으므로 -1을 반환한다.
+arr.indexOf(4);    // -> -1
+// 두 번째 인수는 검색을 시작할 인덱스다. 두 번째 인수를 생략하면 처음부터 검색한다.
+arr.indexOf(2, 2); // -> 2
+```
+
+#### 27.8.3 Array.prototype.push(원본)
+
+> 인수로 전달받은 값을 원본 배열에 마지막 요소로 추가한다.
+
+```
+const arr = [1, 2];
+
+// 인수로 전달받은 모든 값을 원본 배열 arr의 마지막 요소로 추가하고 변경된 length 값을 반환한다.
+let result = arr.push(3, 4);
+console.log(result); // 4
+
+// push 메서드는 원본 배열을 직접 변경한다.
+console.log(arr); // [1, 2, 3, 4]
+```
+
+그러나 성능 면에서 좋지 않다. 대신 `length`를 이용하면 배열의 마지막에 요소를 직접 추가할 수 있다. 속도가 훨씬 빠르다.
+
+```
+const arr = [1, 2];
+
+// arr.push(3)과 동일한 처리를 한다. 이 방법이 push 메서드보다 빠르다.
+arr[arr.length] = 3;
+console.log(arr); // [1, 2, 3]
+```
+
+스프레드 문법 또한 같은 역할을 한다.
+
+```
+const arr = [1, 2];
+
+// ES6 스프레드 문법
+const newArr = [...arr, 3];
+console.log(newArr); // [1, 2, 3]
+```
+
+#### 27.8.4 Array.prototype.pop(원본)
+
+마지막 요소를 제거하고 그 요소를 반환한다. 빈 배열에 사용하면 `undefined`를 반환한다.
+
+```
+const arr = [1, 2];
+
+// 원본 배열에서 마지막 요소를 제거하고 제거한 요소를 반환한다.
+let result = arr.pop();
+console.log(result); // 2
+
+// pop 메서드는 원본 배열을 직접 변경한다.
+console.log(arr); // [1]
+```
+
+`push`와 `pop`을 통해 스택을 구현할 수 있다.
+
+### 27.8.5 Array.prototype.unshift(원본)
+
+인수로 전달받은 모든 값을 선두에 추가하고, 변경된 `length`프로퍼티를 반환한다.
+
+```
+const arr = [1, 2];
+
+// 인수로 전달받은 모든 값을 원본 배열의 선두에 요소로 추가하고 변경된 length 값을 반환한다.
+let result = arr.unshift(3, 4);
+console.log(result); // 4
+
+// unshift 메서드는 원본 배열을 직접 변경한다.
+console.log(arr); // [3, 4, 1, 2]
+```
+
+이 또한 스프레드 문법을 사용하는 편이 좋다.
+
+```
+const arr = [1, 2];
+
+// ES6 스프레드 문법
+const newArr = [3, ...arr];
+console.log(newArr); // [3, 1, 2]
+```
+
+### 27.8.6 Array.prototype.shift(원본)
+
+배열의 첫째 요소를 제거하고 그 요소를 반환한다.
+
+```
+const arr = [1, 2];
+
+// 원본 배열에서 첫 번째 요소를 제거하고 제거한 요소를 반환한다.
+let result = arr.shift();
+console.log(result); // 1
+
+// shift 메서드는 원본 배열을 직접 변경한다.
+console.log(arr); // [2]
+```
+
+`shift`와 `unshift`를 이용해 큐를 구현할 수 있다.
+
+### 27.8.7 Array.prototype.concat
+
+인수로 전달된 값들(배열 혹은 원시값)을 원본 배열의 마지막 요소로 추가한 새로운 배열을 반환한다.
+
+```
+const arr1 = [1, 2];
+const arr2 = [3, 4];
+
+// 배열 arr2를 원본 배열 arr1의 마지막 요소로 추가한 새로운 배열을 반환한다.
+// 인수로 전달한 값이 배열인 경우 배열을 해체하여 새로운 배열의 요소로 추가한다.
+let result = arr1.concat(arr2);
+console.log(result); // [1, 2, 3, 4]
+
+// 숫자를 원본 배열 arr1의 마지막 요소로 추가한 새로운 배열을 반환한다.
+result = arr1.concat(3);
+console.log(result); // [1, 2, 3]
+
+// 배열 arr2와 숫자를 원본 배열 arr1의 마지막 요소로 추가한 새로운 배열을 반환한다.
+result = arr1.concat(arr2, 5);
+console.log(result); // [1, 2, 3, 4, 5]
+
+// 원본 배열은 변경되지 않는다.
+console.log(arr1); // [1, 2]
+```
+
+`push`와 `unshift`는 `concat`으로 대체할 수 있다.
+
+```
+
+const arr1 = [3, 4];
+
+// unshift 메서드는 원본 배열을 직접 변경한다.
+// 따라서 원본 배열을 변수에 저장해 두지 않으면 변경된 배열을 사용할 수 없다.
+arr1.unshift(1, 2);
+// unshift 메서드를 사용할 경우 원본 배열을 반드시 변수에 저장해 두어야 결과를 확인할 수 있다.
+console.log(arr1); // [1, 2, 3, 4]
+
+// push 메서드는 원본 배열을 직접 변경한다.
+// 따라서 원본 배열을 변수에 저장해 두지 않으면 변경된 배열을 사용할 수 없다.
+arr1.push(5, 6);
+// push 메서드를 사용할 경우 원본 배열을 반드시 변수에 저장해 두어야 결과를 확인할 수 있다.
+console.log(arr1); // [1, 2, 3, 4, 5, 6]
+
+// unshift와 push 메서드는 concat 메서드로 대체할 수 있다.
+const arr2 = [3, 4];
+
+// concat 메서드는 원본 배열을 변경하지 않고 새로운 배열을 반환한다.
+// arr1.unshift(1, 2)를 다음과 같이 대체할 수 있다.
+let result = [1, 2].concat(arr2);
+console.log(result); // [1, 2, 3, 4]
+
+// arr1.push(5, 6)를 다음과 같이 대체할 수 있다.
+result = result.concat(5, 6);
+console.log(result); // [1, 2, 3, 4, 5, 6]
+```
+
+스프레드 문법으로 대체할 수 있다.
+
+```
+let result = [1, 2].concat([3, 4]);
+console.log(result); // [1, 2, 3, 4]
+
+// concat 메서드는 ES6의 스프레드 문법으로 대체할 수 있다.
+result = [...[1, 2], ...[3, 4]];
+console.log(result); // [1, 2, 3, 4]
+```
+
+> 결론적으로 `push/unshift`와 `concat` 대신에 스프레드 문법을 사용하는 것을 권장한다.
+
+### 27.8.8 Array.prototype.splice(원본)
+
+배열 중간에 요소를 추가, 삭제하는 경우 사용한다. 3개의 매개변수가 있다.
+
+- start: 원본 배열의 요소 삭제하기 시작할 인덱스이다. 음수일 경우 배열 끝에서의 인덱스를 나타낸다.
+- deleteCount: start 부터 시작해 제거할 요소의 개수이다. 0일경우 아무것도 제거하지 않는다.
+- items: 제거한 위치에 삽입할 요소들이다. 생략하면 제거만 한다.
+
+```
+const arr = [1, 2, 3, 4];
+
+// 원본 배열의 인덱스 1부터 2개의 요소를 제거하고 그 자리에 새로운 요소 20, 30을 삽입한다.
+const result = arr.splice(1, 2, 20, 30);
+
+// 제거한 요소가 배열로 반환된다.
+console.log(result); // [2, 3]
+// splice 메서드는 원본 배열을 직접 변경한다.
+console.log(arr); // [1, 20, 30, 4]
+```
+
+배열에서 특정 요소를 제거하려면 `indexOf`를 사용해 인덱스를 취득하고, `splice`를 사용한다.
+
+### 27.8.9 Array.prototype.slice
+
+인수로 전달된 범위의 요소를 복사해 배열로 전달한다. 두개의 매개변수를 가진다.
+
+- start: 복사를 시작할 인덱스. 음수는 배열 끝에서의 인덱스를 나타낸다.
+- end: 복사를 종료할 인덱스. 이 인덱스의 요소는 복사되지 않는다. 생략 가능하며 생략하면 length 프로퍼티의 값이다.
+
+```
+const arr = [1, 2, 3];
+
+// arr[0]부터 arr[1] 이전(arr[1] 미포함)까지 복사하여 반환한다.
+arr.slice(0, 1); // -> [1]
+
+// arr[1]부터 arr[2] 이전(arr[2] 미포함)까지 복사하여 반환한다.
+arr.slice(1, 2); // -> [2]
+
+// 원본은 변경되지 않는다.
+console.log(arr); // [1, 2, 3]
+```
+
+인수를 모두 생략하면 얕은 복사를 통해 배열을 복사한다.
+
+```
+const todos = [
+  { id: 1, content: 'HTML', completed: false },
+  { id: 2, content: 'CSS', completed: true },
+  { id: 3, content: 'Javascript', completed: false }
+];
+
+// 얕은 복사(shallow copy)
+const _todos = todos.slice();
+// const _todos = [...todos];
+
+// _todos와 todos는 참조값이 다른 별개의 객체다.
+console.log(_todos === todos); // false
+
+// 배열 요소의 참조값이 같다. 즉, 얕은 복사되었다.
+console.log(_todos[0] === todos[0]); // true
+```
+
+이를 이용해 `arguments, HTMLCollection, NodeList`같은 유사 배열 객체를 배열로 변환할 수 있다.
+
+```
+function sum() {
+  // 유사 배열 객체를 배열로 변환(ES5)
+  var arr = Array.prototype.slice.call(arguments);
+  console.log(arr); // [1, 2, 3]
+
+  return arr.reduce(function (pre, cur) {
+    return pre + cur;
+  }, 0);
+}
+
+console.log(sum(1, 2, 3)); // 6
+```
+
+### 27.8.10 Array.prototype.join
+
+원본 배열의 요소들을 문자열로 변환하고, 구분자로 연결된 문자열을 반환한다.
+
+```
+const arr = [1, 2, 3, 4];
+
+// 기본 구분자는 ','이다.
+// 원본 배열 arr의 모든 요소를 문자열로 변환한 후, 기본 구분자 ','로 연결한 문자열을 반환한다.
+arr.join(); // -> '1,2,3,4';
+
+// 원본 배열 arr의 모든 요소를 문자열로 변환한 후, 빈문자열로 연결한 문자열을 반환한다.
+arr.join(''); // -> '1234'
+
+// 원본 배열 arr의 모든 요소를 문자열로 변환한 후, 구분자 ':'로 연결한 문자열을 반환한다.ㄴ
+arr.join(':'); // -> '1:2:3:4'
+```
+
+### 27.8.11 Array.prototype.reverse(원본)
+
+원본 배열의 순서를 뒤집는다.
+
+```
+const arr = [1, 2, 3];
+const result = arr.reverse();
+
+// reverse 메서드는 원본 배열을 직접 변경한다.
+console.log(arr); // [3, 2, 1]
+// 반환값은 변경된 배열이다.
+console.log(result); // [3, 2, 1]
+```
+
+### 27.8.12 Array.prototype.fill(원본)
+
+인수로 전달받은 값을 배열의 처음부터 끝까지 요소로 채워준다.
+
+```
+const arr = [1, 2, 3];
+
+// 인수로 전달 받은 값 0을 배열의 처음부터 끝까지 요소로 채운다.
+arr.fill(0);
+
+// fill 메서드는 원본 배열을 직접 변경한다.
+console.log(arr); // [0, 0, 0]
+```
+
+두번째 인수로 요소 채우기를 시작할 인덱슬르 전달하고, 세번째로 멈출 인덱스를 전달한다.
+
+```
+const arr = [1, 2, 3, 4, 5];
+
+// 인수로 전달받은 값 0을 배열의 인덱스 1부터 3 이전(인덱스 3 미포함)까지 요소로 채운다.
+arr.fill(0, 1, 3);
+
+// fill 메서드는 원본 배열을 직접 변경한다.
+console.log(arr); // [1, 0, 0, 4, 5]
+```
+
+### 27.8.13 Array.prototype.indcludes
+
+배열 내에 특정 요소가 있는지 파악해 `true` 혹은 `false`를 전달한다. 첫째 인자로 검사할 대상, 두번째 인자로 인덱스를 전달할 수 있다.
+
+```
+const arr = [1, 2, 3];
+
+// 배열에 요소 1이 포함되어 있는지 인덱스 1부터 확인한다.
+arr.includes(1, 1); // -> false
+
+// 배열에 요소 3이 포함되어 있는지 인덱스 2(arr.length - 1)부터 확인한다.
+arr.includes(3, -1); // -> true
+```
+
+### 27.8.14 Array.prototype.flat
+
+재귀적으로 함수를 평탄화한다. 인수로 깊이를 지정해 줄 수 있다. 기본값은 1이며 Infinity를 전달하면 모두를 평탄화한다.
+
+```
+// 중첩 배열을 평탄화하기 위한 깊이 값의 기본값은 1이다.
+[1, [2, [3, [4]]]].flat();  // -> [1, 2, [3, [4]]]
+[1, [2, [3, [4]]]].flat(1); // -> [1, 2, [3, [4]]]
+
+// 중첩 배열을 평탄화하기 위한 깊이 값을 2로 지정하여 2단계 깊이까지 평탄화한다.
+[1, [2, [3, [4]]]].flat(2); // -> [1, 2, 3, [4]]
+// 2번 평탄화한 것과 동일하다.
+[1, [2, [3, [4]]]].flat().flat(); // -> [1, 2, 3, [4]]
+
+// 중첩 배열을 평탄화하기 위한 깊이 값을 Infinity로 지정하여 중첩 배열 모두를 평탄화한다.
+[1, [2, [3, [4]]]].flat(Infinity); // -> [1, 2, 3, 4]
+```
+
+## 27.9 배열 고차 함수
+
+> 고차함수: 함수를 인수로 전달받거나 함수를 반환하는 함수
+
+불변성을 지향하는 함수형 프로그래밍에 기반을 둔다.
+
+### 27.9.1 Array.prototype.sort(원본)
+
+배열의 요소를 정렬한다. 기본적으로 오름차순 정렬이다.
+
+```
+const fruits = ['Banana', 'Orange', 'Apple'];
+
+// 오름차순(ascending) 정렬
+fruits.sort();
+
+// sort 메서드는 원본 배열을 직접 변경한다.
+console.log(fruits); // ['Apple', 'Banana', 'Orange']
+```
+
+숫자로 이루어진 배열을 정렬할 때 주의가 필요하다. 유니코드를 따르므로, 11이 2보다 앞서서 정렬될 수 있다. 따라서 비교함수를 인수로 전달해야한다. 비교 함수는 양수, 음수, 0을 반환하는데, 0보다 작으면 첫번째 인자를 우선하고, 0이면 정렬하지 않으며, 양수면 두번째 인수를 우선하여 정렬한다.
+
+```
+const points = [40, 100, 1, 5, 2, 25, 10];
+
+// 숫자 배열의 오름차순 정렬. 비교 함수의 반환값이 0보다 작으면 a를 우선하여 정렬한다.
+points.sort((a, b) => a - b);
+console.log(points); // [1, 2, 5, 10, 25, 40, 100]
+
+// 숫자 배열에서 최소/최대값 취득
+console.log(points[0], points[points.length]); // 1
+
+// 숫자 배열의 내림차순 정렬. 비교 함수의 반환값이 0보다 작으면 b를 우선하여 정렬한다.
+points.sort((a, b) => b - a);
+console.log(points); // [100, 40, 25, 10, 5, 2, 1]
+
+// 숫자 배열에서 최대값 취득
+console.log(points[0]); // 100
+```
+
+### 27.9.2 Array.prototype.forEach
+
+`forEach`는 `for`문을 대체하는 고차함수이다. 자신의 내부에서 반복문을 실행하는, 즉, `for`문을 추상화한 고차 함수로 호출한 배열을 순회하며 콜백 함수로 수행해야 할 처리를 받아 반복 호출한다.
+
+```
+const numbers = [1, 2, 3];
+let pows = [];
+
+// forEach 메서드는 numbers 배열의 모든 요소를 순회하면서 콜백 함수를 반복 호출한다.
+numbers.forEach(item => pows.push(item ** 2));
+console.log(pows); // [1, 4, 9]
+
+```
+
+콜백 함수에서 3개의 인수를 받을 수 있다(배열의 요소값과 인덱스, 호출한 배열 자체). 이를 통해 원본 배열을 바꿀 수도 있다.
+
+```
+const numbers = [1, 2, 3];
+
+// forEach 메서드는 원본 배열을 변경하지 않지만 콜백 함수를 통해 원본 배열을 변경할 수는 있다.
+// 콜백 함수의 세 번째 매개변수 arr은 원본 배열 numbers를 가리킨다.
+// 따라서 콜백 함수의 세 번째 매개변수 arr을 직접 변경하면 원본 배열 numbers가 변경된다.
+numbers.forEach((item, index, arr) => { arr[index] = item ** 2; });
+console.log(numbers); // [1, 4, 9]
+```
+
+반환값은 언제나 `undefined`이다.
+
+```
+const result = [1, 2, 3].forEach(console.log);
+console.log(result); // undefined
+```
+
+`break`, `continue`를 사용할 수 없다. 또한 희소배열의 경우 존재하지 않는 요소는 순회 대상에서 제외된다.
+
+```
+[1, 2, 3].forEach(item => {
+  console.log(item);
+  if (item > 1) break; // SyntaxError: Illegal break statement
+});
+
+[1, 2, 3].forEach(item => {
+  console.log(item);
+  if (item > 1) continue;
+  // SyntaxError: Illegal continue statement: no surrounding iteration statement
+});
+
+// 희소 배열
+const arr = [1, , 3];
+
+// for 문으로 희소 배열을 순회
+for (let i = 0; i < arr.length; i++) {
+  console.log(arr[i]); // 1, undefined, 3
+}
+
+// forEach 메서드는 희소 배열의 존재하지 않는 요소를 순회 대상에서 제외한다.
+arr.forEach(v => console.log(v)); // 1, 3
+```
+
+`for`문보다 성능이 좋지는 않지만, 가독성이 뛰어나다.
+
+### 27.9.3 Array.prototype.map
+
+배열의 모든 요소를 순회하며 전달받은 콜백 함수를 반복 호출한다. 그리고 콜백 함수의 반환값들로 이루어진 새로운 배열을 반환한다.
+
+```
+const numbers = [1, 4, 9];
+
+// map 메서드는 numbers 배열의 모든 요소를 순회하면서 콜백 함수를 반복 호출한다.
+// 그리고 콜백 함수의 반환값들로 구성된 새로운 배열을 반환한다.
+const roots = numbers.map(item => Math.sqrt(item));
+
+// 위 코드는 다음과 같다.
+// const roots = numbers.map(Math.sqrt);
+
+// map 메서드는 새로운 배열을 반환한다
+console.log(roots);   // [ 1, 2, 3 ]
+// map 메서드는 원본 배열을 변경하지 않는다
+console.log(numbers); // [ 1, 4, 9 ]
+```
+
+`forEach`가 `undefined`를 반환하는 반면, `map`은 새로운 배열을 반환한다.
+이때 이 새로운 배열의 `length`프로퍼티 값과 호출한 배열의 `length`프로퍼티 값은 반드시 같다. 즉, 1:1 매핑한다.
+
+`map`또한 콜백함수에서 요소값과 인덱스, 배열 자체를 전달받을 수 있다.
+
+```
+// map 메서드는 콜백 함수를 호출하면서 3개(요소값, 인덱스, this)의 인수를 전달한다.
+[1, 2, 3].map((item, index, arr) => {
+  console.log(`요소값: ${item}, 인덱스: ${index}, this: ${JSON.stringify(arr)}`);
+  return item;
+});
+/*
+요소값: 1, 인덱스: 0, this: [1,2,3]
+요소값: 2, 인덱스: 1, this: [1,2,3]
+요소값: 3, 인덱스: 2, this: [1,2,3]
+*/
+```
+
+`map`의 두번째 인수로 콜백 함수 내부에서 `this`로 사용할 객체를 전달할 수 있다.
+
+```
+class Prefixer {
+  constructor(prefix) {
+    this.prefix = prefix;
+  }
+
+  add(arr) {
+    return arr.map(function (item) {
+      // 외부에서 this를 전달하지 않으면 this는 undefined를 가리킨다.
+      return this.prefix + item;
+    }, this); // map 메서드의 콜백 함수 내부에서 this로 사용할 객체를 전달
+  }
+}
+
+const prefixer = new Prefixer('-webkit-');
+console.log(prefixer.add(['transition', 'user-select']));
+// ['-webkit-transition', '-webkit-user-select']
+```
+
+더 나은 방법은 화살표 함수를 사용하는 것이다.
+
+```
+class Prefixer {
+  constructor(prefix) {
+    this.prefix = prefix;
+  }
+
+  add(arr) {
+    // 화살표 함수 내부에서 this를 참조하면 상위 스코프의 this를 그대로 참조한다.
+    return arr.map(item => this.prefix + item);
+  }
+}
+
+const prefixer = new Prefixer('-webkit-');
+console.log(prefixer.add(['transition', 'user-select']));
+// ['-webkit-transition', '-webkit-user-select']
+```
+
+### 27.9.4 Array.prototype.filter
+
+콜백 함수의 리턴값이 `true`인 요소로만 구성된 새로운 배열을 반환한다.
+
+```
+const numbers = [1, 2, 3, 4, 5];
+
+// filter 메서드는 numbers 배열의 모든 요소를 순회하면서 콜백 함수를 반복 호출한다.
+// 그리고 콜백 함수의 반환값이 true인 요소로만 구성된 새로운 배열을 반환한다.
+// 다음의 경우 numbers 배열에서 홀수인 요소만을 필터링한다(1은 true로 평가된다).
+const odds = numbers.filter(item => item % 2);
+console.log(odds); // [1, 3, 5]
+```
+
+`filter`또한 콜백함수에서 요소값, 인덱스, 배열 자체를 전달받을 수 있다.
+
+```
+// filter 메서드는 콜백 함수를 호출하면서 3개(요소값, 인덱스, this)의 인수를 전달한다.
+[1, 2, 3].filter((item, index, arr) => {
+  console.log(`요소값: ${item}, 인덱스: ${index}, this: ${JSON.stringify(arr)}`);
+  return item % 2;
+});
+/*
+요소값: 1, 인덱스: 0, this: [1,2,3]
+요소값: 2, 인덱스: 1, this: [1,2,3]
+요소값:
+```
+
+`this`로 사용할 값을 전달받을 수도 있으며, 더 좋은 방법은 역시 화살표 함수를 이용하는 것이다.
+
+`filter`는 배열에서 특정 요소를 제거하기 위해 사용할수도 있다.
+
+```
+class Users {
+  constructor() {
+    this.users = [
+      { id: 1, name: 'Lee' },
+      { id: 2, name: 'Kim' }
+    ];
+  }
+
+  // 요소 추출
+  findById(id) {
+    // id가 일치하는 사용자만 반환한다.
+    return this.users.filter(user => user.id === id);
+  }
+
+  // 요소 제거
+  remove(id) {
+    // id가 일치하지 않는 사용자를 제거한다.
+    this.users = this.users.filter(user => user.id !== id);
+  }
+}
+
+const users = new Users();
+
+let user = users.findById(1);
+console.log(user); // [{ id: 1, name: 'Lee' }]
+
+// id가 1인 사용자를 제거한다.
+users.remove(1);
+
+user = users.findById(1);
+console.log(user); // []
+```
+
+### 27.9.5 Array.prototype.reduce
+
+자신을 호출한 배열의 모든 요소를 순회하며 인수로 전달받은 콜백 함수를 호출한다. 이 반환값을 다음 순회의 콜백 함수의 첫번째 인자로 전달하며 콜백함수를 호출해서 하나의 결과값을 만들어 반환한다.
+
+첫번째 인자로 콜백함수, 두번째로 초기값을 전달받는다. 콜백함수에는 4개의 인수(초기값 또는 이전 콜백 함수의 반환값, 배열의 요소값과 인덱스, 배열 자체)가 전달된다.
+
+```
+// [1, 2, 3, 4]의 모든 요소의 누적을 구한다.
+const sum = [1, 2, 3, 4].reduce((accumulator, currentValue, index, array) => accumulator + currentValue, 0);
+
+console.log(sum); // 10
+```
+
+`reduce`는 하나의 값을 구해야 하는 경우 사용한다.
+
+#### 평균 구하기
+
+```
+const values = [1, 2, 3, 4, 5, 6];
+
+const average = values.reduce((acc, cur, i, { length }) => {
+  // 마지막 순회가 아니면 누적값을 반환하고 마지막 순회면 누적값으로 평균을 구해 반환한다.
+  return i === length - 1 ? (acc + cur) / length : acc + cur;
+}, 0);
+
+console.log(average); // 3.5
+```
+
+#### 최댓값 구하기
+
+```
+const values = [1, 2, 3, 4, 5];
+
+const max = values.reduce((acc, cur) => (acc > cur ? acc : cur), 0);
+console.log(max); // 5
+```
+
+물론 `Math.max`를 사용하는게 더 직관적이다.
+
+#### 요소의 중복 횟수 구하기
+
+```
+const fruits = ['banana', 'apple', 'orange', 'orange', 'apple'];
+
+const count = fruits.reduce((acc, cur) => {
+  // 첫 번째 순회 시 acc는 초기값인 {}이고 cur은 첫 번째 요소인 'banana'다.
+  // 초기값으로 전달받은 빈 객체에 요소값인 cur을 프로퍼티 키로, 요소의 개수를 프로퍼티 값으로
+  // 할당한다. 만약 프로퍼티 값이 undefined(처음 등장하는 요소)이면 프로퍼티 값을 1로 초기화한다.
+  acc[cur] = (acc[cur] || 0) + 1;
+  return acc;
+}, {});
+
+// 콜백 함수는 총 5번 호출되고 다음과 같이 결과값을 반환한다.
+/*
+{banana: 1} => {banana: 1, apple: 1} => {banana: 1, apple: 1, orange: 1}
+=> {banana: 1, apple: 1, orange: 2} => {banana: 1, apple: 2, orange: 2}
+*/
+
+console.log(count); // { banana: 1, apple: 2, orange: 2 }
+```
+
+#### 중첩 배열 평탄화
+
+```
+const values = [1, [2, 3], 4, [5, 6]];
+
+const flatten = values.reduce((acc, cur) => acc.concat(cur), []);
+// [1] => [1, 2, 3] => [1, 2, 3, 4] => [1, 2, 3, 4, 5, 6]
+
+console.log(flatten); // [1, 2, 3, 4, 5, 6]
+```
+
+물론 `Array.prototype.flat`이 직관적이다.
+
+#### 중복 요소 제거
+
+```
+const values = [1, 2, 1, 3, 5, 4, 5, 3, 4, 4];
+
+const result = values.reduce(
+  (unique, val, i, _values) =>
+    // 현재 순회 중인 요소의 인덱스 i가 val의 인덱스와 같다면 val은 처음 순회하는 요소다.
+    // 현재 순회 중인 요소의 인덱스 i가 val의 인덱스와 다르다면 val은 중복된 요소다.
+    // 처음 순회하는 요소만 초기값 []가 전달된 unique 배열에 담아 반환하면 중복된 요소는 제거된다.
+    _values.indexOf(val) === i ? [...unique, val] : unique,
+  []
+);
+
+console.log(result); // [1, 2, 3, 5, 4]
+```
+
+`filter`가 더 직관적이다.
+또한 `set`을 사용할수도 있다. 중복을 제거할때는 이를 추천한다.
+
+```
+const values = [1, 2, 1, 3, 5, 4, 5, 3, 4, 4];
+
+// 중복을 허용하지 않는 Set 객체의 특성을 활용하여 배열에서 중복된 요소를 제거할 수 있다.
+const result = [...new Set(values)];
+console.log(result); // [1, 2, 3, 5, 4]
+```
+
+이처럼 `map, filter, some. find, every`같은 고차함수는 `reduce`를 사용해 구현할 수 있다.
+
+`reduce`의 두번째 인수는 생략할 수 있다. 하지만 초기값은 전달하는 편이 언제나 안전하다.
+
+```
+const sum = [].reduce((acc, cur) => acc + cur);
+// TypeError: Reduce of empty array with no initial value
+
+sum = [].reduce((acc, cur) => acc + cur, 0);
+console.log(sum); // 0
+```
+
+또한 객체의 특정 프로퍼티 값을 함산하는 경우를 생각해보자.
+
+```
+const products = [
+  { id: 1, price: 100 },
+  { id: 2, price: 200 },
+  { id: 3, price: 300 }
+];
+
+// 1번째 순회 시 acc는 { id: 1, price: 100 }, cur은 { id: 2, price: 200 }이고
+// 2번째 순회 시 acc는 300, cur은 { id: 3, price: 300 }이다.
+// 2번째 순회 시 acc에 함수에 객체가 아닌 숫자값이 전달된다. 이때 acc.price는 undefined다.
+const priceSum = products.reduce((acc, cur) => acc.price + cur.price);
+
+console.log(priceSum); // NaN
+
+priceSum = products.reduce((acc, cur) => acc + cur.price, 0);
+
+console.log(priceSum); // 600
+```
+
+### 27.9.6 Array.prototype.some
+
+> 배열을 순회하며 인수로 전달된 콜백함수를 호출한다. 콜백 함수의 리턴이 단 한번이라도 참이면 `true` 아니라면 `false`를 전달한다. 단, 빈 배열에서 호출한 경우 언제나 `false`를 반환한다. 마찬가지로 콜백 함수에서 요소값과 인덱스, 배열 자체를 전달받을 수 있다.
+
+```
+// 배열의 요소 중에 10보다 큰 요소가 1개 이상 존재하는지 확인
+[5, 10, 15].some(item => item > 10); // -> true
+
+// 배열의 요소 중에 0보다 작은 요소가 1개 이상 존재하는지 확인
+[5, 10, 15].some(item => item < 0); // -> false
+
+// 배열의 요소 중에 'banana'가 1개 이상 존재하는지 확인
+['apple', 'banana', 'mango'].some(item => item === 'banana'); // -> true
+
+// some 메서드를 호출한 배열이 빈 배열인 경우 언제나 false를 반환한다.
+[].some(item => item > 3); // -> false
+```
+
+메서드의 두번째 인자로 `this`로 사용할 객체를 전달할 수 있다. 물론 좋은 방법은 화살표 함수를 사용하는 것이다.
+
+### 27.9.7 Array.prototype.every
+
+> 배열을 순회하며 인수로 전달된 콜백함수를 호출한다. 콜백 함수의 반환값이 전부 참이면 `true` 한번이라도 거짓이면 `false`를 전달한다. 단, 빈 배열에서 호출한 경우 언제나 `true`를 반환한다. 마찬가지로 콜백 함수에서 요소값과 인덱스, 배열 자체를 전달받을 수 있다.
+
+```
+// 배열의 모든 요소가 3보다 큰지 확인
+[5, 10, 15].every(item => item > 3); // -> true
+
+// 배열의 모든 요소가 10보다 큰지 확인
+[5, 10, 15].every(item => item > 10); // -> false
+
+// every 메서드를 호출한 배열이 빈 배열인 경우 언제나 true를 반환한다.
+[].every(item => item > 3); // -> true
+```
+
+### 27.9.8 Array.prototype.find
+
+> 반환값이 `true`인 첫번째 요소를 전달한다. 없다면 `undefined`를 반환한다. 마찬가지로 콜백 함수에서 요소값과 인덱스, 배열 자체를 전달받을 수 있다.
+
+```
+const users = [
+  { id: 1, name: 'Lee' },
+  { id: 2, name: 'Kim' },
+  { id: 2, name: 'Choi' },
+  { id: 3, name: 'Park' }
+];
+
+// id가 2인 첫 번째 요소를 반환한다. find 메서드는 배열이 아니라 요소를 반환한다.
+users.find(user => user.id === 2); // -> {id: 2, name: 'Kim'}
+```
+
+메서드의 두번째 인자로 `this`로 사용할 객체를 전달할 수 있다. 물론 좋은 방법은 화살표 함수를 사용하는 것이다.
+
+### 27.9.9 Array.prototype.findIndex
+
+콜백함수를 호출해 반환값이 `true`인 첫번째 요소의 인덱스를 반환한다. 만약 `true`인 요소가 존재하지 않으면 -1을 리턴한다. 마찬가지로 콜백 함수에서 요소값과 인덱스, 배열 자체를 전달받을 수 있다.
+
+```
+const users = [
+  { id: 1, name: 'Lee' },
+  { id: 2, name: 'Kim' },
+  { id: 2, name: 'Choi' },
+  { id: 3, name: 'Park' }
+];
+
+// id가 2인 요소의 인덱스를 구한다.
+users.findIndex(user => user.id === 2); // -> 1
+
+// name이 'Park'인 요소의 인덱스를 구한다.
+users.findIndex(user => user.name === 'Park'); // -> 3
+
+// 위와 같이 프로퍼티 키와 프로퍼티 값으로 요소의 인덱스를 구하는 경우
+// 다음과 같이 콜백 함수를 추상화할 수 있다.
+function predicate(key, value) {
+  // key와 value를 기억하는 클로저를 반환
+  return item => item[key] === value;
+}
+
+// id가 2인 요소의 인덱스를 구한다.
+users.findIndex(predicate('id', 2)); // -> 1
+
+// name이 'Park'인 요소의 인덱스를 구한다.
+users.findIndex(predicate('name', 'Park')); // -> 3
+```
+
+메서드의 두번째 인자로 `this`로 사용할 객체를 전달할 수 있다. 물론 좋은 방법은 화살표 함수를 사용하는 것이다.
+
+### 27.9.10 Array.prototype.flatMap
+
+`map`을 통해 만든 새로운 배열을 평탄화한다. 즉 `map`과 `flat`을 순차적으로 실행한다.
+
+```
+const arr = ['hello', 'world'];
+
+// map과 flat을 순차적으로 실행
+arr.map(x => x.split('')).flat();
+// -> ['h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd']
+
+// flatMap은 map을 통해 생성된 새로운 배열을 평탄화한다.
+arr.flatMap(x => x.split(''));
+// -> ['h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd']
+```
+
+단, 평탄화의 깊이를 지정할수는 없고, 1단계만 평탄화한다. 만약 깊이를 지정해야한다면 `flatMap`대신 `flat`과 `map`을 차례로 사용하자.
+
+```
+const arr = ['hello', 'world'];
+
+// flatMap은 1단계만 평탄화한다.
+arr.flatMap((str, index) => [index, [str, str.length]]);
+// -> [[0, ['hello', 5]], [1, ['world', 5]]] => [0, ['hello', 5], 1, ['world', 5]]
+
+// 평탄화 깊이를 지정해야 하면 flatMap 메서드를 사용하지 말고 map 메서드와 flat 메서드를 각각 호출한다.
+arr.map((str, index) => [index, [str, str.length]]).flat(2);
+// -> [[0, ['hello', 5]], [1, ['world', 5]]] => [0, 'hello', 5, 1, 'world', 5]
+```
