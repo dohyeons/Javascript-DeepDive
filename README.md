@@ -7071,3 +7071,455 @@ arr.flatMap((str, index) => [index, [str, str.length]]);
 arr.map((str, index) => [index, [str, str.length]]).flat(2);
 // -> [[0, ['hello', 5]], [1, ['world', 5]]] => [0, 'hello', 5, 1, 'world', 5]
 ```
+
+# 28장 Number
+
+## 28.1 Number 생성자 함수
+
+Number 객체는 생성자 함수 객체이다. 따라서 new 연산자와 함께 사용해서 Number인스턴스를 생성할 수 있다.
+
+인수에 아무것도 전달하지 않고 new 연산자로 호출하면 [[NumberData]] 내부 슬롯에 0을 할당한 Number 래퍼 객체를 생성한다.
+
+```js
+const numObj = new Number();
+console.log(numObj); // Number {[[PrimitiveValue]]: 0}
+```
+
+ES5 에서는 [[NumberData]]를 [[PrimitiveValue]]로 불렀다.
+
+숫자를 전달하며 new 연산자와 함께 호출하면, 전달받은 숫자를 할당한 Number 래퍼 객체를 생성한다.
+
+```js
+const numObj = new Number(10);
+console.log(numObj); // Number {[[PrimitiveValue]]: 10}
+```
+
+숫자가 아닌 값을 인수로 전달하면 숫자로 강제 변환하고, 그게 불가능하다면 NaN을 내부 슬롯에 할당한다.
+
+```js
+let numObj = new Number("10");
+console.log(numObj); // Number {[[PrimitiveValue]]: 10}
+
+numObj = new Number("Hello");
+console.log(numObj); // Number {[[PrimitiveValue]]: NaN}
+```
+
+new 를 사용하지 않고 Number를 호출하면 인스턴스가 아닌 숫자를 반환한다. 이를 이용한 명시적 타입 변환이 가능하다.
+
+```js
+// 문자열 타입 => 숫자 타입
+Number("0"); // -> 0
+Number("-1"); // -> -1
+Number("10.53"); // -> 10.53
+
+// 불리언 타입 => 숫자 타입
+Number(true); // -> 1
+Number(false); // -> 0
+```
+
+## 28.2 Number 프로퍼티
+
+### 28.2.1 Number.EPSILON
+
+1과 1보다 큰 숫자 중에서 가장 작은 숫자와의 차이와 같다.
+
+부동 소수점을 표현하기 위해 쓰이는 IEEE 754는 2진법으로 변환했을 때 무한소수가 되어 미세한 오차가 발생할 수밖에 없는 구조적 한계가 있다.
+
+```js
+0.1 + 0.2; // -> 0.30000000000000004
+0.1 + 0.2 === 0.3; // -> false
+```
+
+이를 Number.EPSILON을 사용해서 해결할 수 있다.
+
+```js
+function isEqual(a, b) {
+  // a와 b를 뺀 값의 절대값이 Number.EPSILON보다 작으면 같은 수로 인정한다.
+  return Math.abs(a - b) < Number.EPSILON;
+}
+
+isEqual(0.1 + 0.2, 0.3); // -> true
+```
+
+### 28.2.2 Number.MAX_VALUE
+
+JS에서 표현할 수 있는 가장 큰 양수값이다. 이보다 큰 숫자는 Infinity다.
+
+```js
+Number.MAX_VALUE; // -> 1.7976931348623157e+308
+Infinity > Number.MAX_VALUE; // -> true
+```
+
+### 28.2.3 Number.MIN_VALUE
+
+JS에서 표현할 수 있는 가장 작은 양수값이다. 이보다 작은 숫자는 0이다.
+
+```js
+Number.MIN_VALUE; // -> 5e-324
+Number.MIN_VALUE > 0; // -> true
+```
+
+### 28.2.4 Number.MAX_SAFE_INTEGER
+
+JS에서 안전하게 표현할 수 있는 가장 큰 정수값이다.
+
+```js
+Number.MAX_SAFE_INTEGER; // -> 9007199254740991
+```
+
+### 28.2.5 Number.MIN_SAFE_INTEGER
+
+JS에서 안전하게 표현할 수 있는 가장 작은 정수값이다.
+
+```js
+Number.MIN_SAFE_INTEGER; // -> -9007199254740991
+```
+
+### 28.2.6 Number.POSITIVE_INFINITY
+
+양의 무한대를 나타내는 숫자값 Infinity와 같다.
+
+```js
+Number.POSITIVE_INFINITY; // -> Infinity
+```
+
+### 28.2.7 Number.NEGATIVE_INFINITY
+
+음의 무한대를 나타내는 숫자값 -Infinity와 같다.
+
+```js
+Number.NEGATIVE_INFINITY; // -> -Infinity
+```
+
+### 28.2.8 Number.NaN
+
+NaN을 나타내는 숫자이다. window.NaN과 같다.
+
+```js
+Number.NaN; // -> NaN
+```
+
+## 28.3 Number 메서드
+
+### 28.3.1 Number.isFinite
+
+Infinity 혹은 -Infinity인지를 검사해 결과를 불리언으로 반환한다.
+
+```js
+// 인수가 정상적인 유한수이면 true를 반환한다.
+Number.isFinite(0); // -> true
+Number.isFinite(Number.MAX_VALUE); // -> true
+Number.isFinite(Number.MIN_VALUE); // -> true
+
+// 인수가 무한수이면 false를 반환한다.
+Number.isFinite(Infinity); // -> false
+Number.isFinite(-Infinity); // -> false
+```
+
+인수가 NaN이면 항상 false를 반환한다.
+전달받은 인자를 숫자로 암묵적 변환하지 않는다. 따라서 숫자가 아닌 값이 주어지면 언제나 false를 반환한다.
+
+```js
+Number.isFinite(NaN); // -> false
+
+// Number.isFinite는 인수를 숫자로 암묵적 타입 변환하지 않는다.
+Number.isFinite(null); // -> false
+
+// isFinite는 인수를 숫자로 암묵적 타입 변환한다. null은 0으로 암묵적 타입 변환된다.
+isFinite(null); // -> true
+```
+
+### 28.3.2 Number.isInteger
+
+숫자값이 정수인지를 검사하여 그 결과를 불리언으로 반환한다. 암묵적 타입 변환을 하지 않는다.
+
+```js
+// 인수가 정수이면 true를 반환한다.
+Number.isInteger(0); // -> true
+Number.isInteger(123); // -> true
+Number.isInteger(-123); // -> true
+
+// 0.5는 정수가 아니다.
+Number.isInteger(0.5); // -> false
+// '123'을 숫자로 암묵적 타입 변환하지 않는다.
+Number.isInteger("123"); // -> false
+// false를 숫자로 암묵적 타입 변환하지 않는다.
+Number.isInteger(false); // -> false
+// Infinity/-Infinity는 정수가 아니다.
+Number.isInteger(Infinity); // -> false
+Number.isInteger(-Infinity); // -> false
+```
+
+### 28.3.3. Number.isNaN
+
+인수로 전달된 숫자값이 NaN인지 검사하여 결과를 불리언으로 반환한다.
+
+```js
+// 인수가 NaN이면 true를 반환한다.
+Number.isNaN(NaN); // -> true
+```
+
+암묵적 타입 변환이 발생하지 않는다. 따라서 숫자가 아닌 값이 주어지면 언제난 false를 반환한다.
+
+```js
+// Number.isNaN은 인수를 숫자로 암묵적 타입 변환하지 않는다.
+Number.isNaN(undefined); // -> false
+
+// isFinite는 인수를 숫자로 암묵적 타입 변환한다. undefined는 NaN으로 암묵적 타입 변환된다.
+isNaN(undefined); // -> true
+```
+
+### 28.3.4 Number.isSafeInteger
+
+안전한 정수인지 검사하여 불리언 값을 반환한다. 암묵적 타입 변환이 발생하지 않는다.
+
+```js
+// 0은 안전한 정수이다.
+Number.isSafeInteger(0); // -> true
+// 1000000000000000은 안전한 정수이다.
+Number.isSafeInteger(1000000000000000); // -> true
+
+// 10000000000000001은 안전하지 않다.
+Number.isSafeInteger(10000000000000001); // -> false
+// 0.5은 정수가 아니다.
+Number.isSafeInteger(0.5); // -> false
+// '123'을 숫자로 암묵적 타입 변환하지 않는다.
+Number.isSafeInteger("123"); // -> false
+// false를 숫자로 암묵적 타입 변환하지 않는다.
+Number.isSafeInteger(false); // -> false
+// Infinity/-Infinity는 정수가 아니다.
+Number.isSafeInteger(Infinity); // -> false
+```
+
+### 28.3.5 Number.prototype.toExponential
+
+숫자를 지수 표기법으로 변환하여 반환한다. 매우 크거나 작은 수를 표기할 때 주로 사용하며, e 앞에 있는 숫자에 10의 n승을 곱하는 형식으로 수를 나타낸다. 인수로 소수점 이하로 표현할 자릿수를 전달할 수 있다.
+
+```js
+(77.1234).toExponential(); // -> "7.71234e+1"
+(77.1234).toExponential(4); // -> "7.7123e+1"
+(77.1234).toExponential(2); // -> "7.71e+1"
+```
+
+숫자 뒤의 .은 의미가 모호하기 때문에 숫자 리터럴을 전달할 경우 에러가 발생한다.
+
+```js
+77.toExponential(); // -> SyntaxError: Invalid or unexpected token
+```
+
+.뒤에 숫자가 이어지면 명백히 수소점 숫자의 소수 구분 기호이다. 따라서 두번째 . 은 프로퍼티 접근 연산자로 해석된다. 따라서 숫자 리터럴과 메서드를 함께 사용할 경우 혼란을 방지하기 위해 그룹 연산자를 사용하는 편이 좋다.
+
+```js
+(77.1234).toExponential(); // -> "7.71234e+1"
+(77).toExponential(); // -> "7.7e+1"
+```
+
+JS는 수자 정수 부분과 소수 부분 사이에 공백을 허용하지 않는다. 따라서 숫자 뒤의 . 뒤에 공백이 오면 .을 프로퍼티 접근 연산자로 해석한다.
+
+```js
+(77).toExponential(); // -> "7.7e+1"
+```
+
+### 28.3.6 Number.prototype.toFixed
+
+숫자를 반올림해 문자열로 반환한다. 소수점 이하 자리를 나타내는 0~20 사이의 정수값을 인수로 전달할 수 있다. 생략하면 0이 지정된다.
+
+```js
+// 소수점 이하 반올림. 인수를 생략하면 기본값 0이 지정된다.
+(12345.6789).toFixed(); // -> "12346"
+// 소수점 이하 1자리수 유효, 나머지 반올림
+(12345.6789).toFixed(1); // -> "12345.7"
+// 소수점 이하 2자리수 유효, 나머지 반올림
+(12345.6789).toFixed(2); // -> "12345.68"
+// 소수점 이하 3자리수 유효, 나머지 반올림
+(12345.6789).toFixed(3); // -> "12345.679"
+```
+
+### 28.3.7 Number.prototype.toPrecision
+
+인수로 받은 전체 자릿수까지 유효하도록 나머지 자릿수를 반환하도록 반올림하여 문자열로 반환한다. 전달받은 전체 자릿수로 표현 불가능함녀 지수 표기법으로 결과를 반환한다.
+자릿수를 나타내는 0~21 사이의 정수값을 인수로 전ㄷ라할 수 있다. 생략하면 0이 지정된다.
+
+```js
+// 전체 자리수 유효. 인수를 전달하지 않으면 기본값 0이 전달된다.
+(12345.6789).toPrecision(); // -> "12345.6789"
+// 전체 1자리수 유효, 나머지 반올림
+(12345.6789).toPrecision(1); // -> "1e+4"
+// 전체 2자리수 유효, 나머지 반올림
+(12345.6789).toPrecision(2); // -> "1.2e+4"
+// 전체 6자리수 유효, 나머지 반올림
+(12345.6789).toPrecision(6); // -> "12345.7"
+```
+
+### 28.3.8 Number.prototype.toString
+
+toString 메서드는 숫자를 문자열로 변환하여 반환한다. 진법을 나타내는 2~36 사이의 정수값을 인수로 전달할 수 있다. 생략하면 기본 10진법이 지정된다.
+
+```js
+// 인수를 생략하면 10진수 문자열을 반환한다.
+(10).toString(); // -> "10"
+// 2진수 문자열을 반환한다.
+(16).toString(2); // -> "10000"
+// 8진수 문자열을 반환한다.
+(16).toString(8); // -> "20"
+// 16진수 문자열을 반환한다.
+(16).toString(16); // -> "10"
+```
+
+# 29장 Math
+
+Math는 정적 프로퍼티와 정적 메서드만 제공한다.
+
+## 29.1 Math 프로퍼티
+
+### 29.1.1 Math.PI
+
+원주율을 반환한다.
+
+## 29.2 Math 메서드
+
+### 29.2.1 Math.abs
+
+인수로 전달된 숫자의 절대값을 반환한다.
+
+```js
+Math.abs(-1); // -> 1
+Math.abs("-1"); // -> 1
+Math.abs(""); // -> 0
+Math.abs([]); // -> 0
+Math.abs(null); // -> 0
+Math.abs(undefined); // -> NaN
+Math.abs({}); // -> NaN
+Math.abs("string"); // -> NaN
+Math.abs(); // -> NaN
+```
+
+### 29.2.2 Math.round
+
+인수로 전달된 숫자의 소수점 이하를 반올림한 정수를 반환한다.
+
+```js
+Math.round(1.4); // -> 1
+Math.round(1.6); // -> 2
+Math.round(-1.4); // -> -1
+Math.round(-1.6); // -> -2
+Math.round(1); // -> 1
+Math.round(); // -> NaN
+```
+
+### 29.2.3 Math.ceil
+
+숫자의 소수점 이하를 올림한 정수를 반환한다.
+
+```js
+Math.ceil(1.4); // -> 2
+Math.ceil(1.6); // -> 2
+Math.ceil(-1.4); // -> -1
+Math.ceil(-1.6); // -> -1
+Math.ceil(1); // -> 1
+Math.ceil(); // -> NaN
+```
+
+### 29.2.4 Math.floor
+
+숫자의 소수점 이하를 내림한 정수를 반환한다.
+
+```js
+Math.floor(1.9); // -> 1
+Math.floor(9.1); // -> 9
+Math.floor(-1.9); // -> -2
+Math.floor(-9.1); // -> -10
+Math.floor(1); // -> 1
+Math.floor(); // -> NaN
+```
+
+### 29.2.5 Math.sqrt
+
+숫자의 제곱근을 반환한다.
+
+```js
+Math.sqrt(9); // -> 3
+Math.sqrt(-9); // -> NaN
+Math.sqrt(2); // -> 1.414213562373095
+Math.sqrt(1); // -> 1
+Math.sqrt(0); // -> 0
+Math.sqrt(); // -> NaN
+```
+
+### 29.2.6 Math.random
+
+임의의 난수를 반환한다. 0에서 1 미만의 실수이다.
+
+```js
+Math.random(); // 0에서 1 미만의 랜덤 실수(0.8208720231391746)
+
+/*
+1에서 10 범위의 랜덤 정수 취득
+1) Math.random으로 0에서 1 미만의 랜덤 실수를 구한 다음, 10을 곱해 0에서 10 미만의
+랜덤 실수를 구한다.
+2) 0에서 10 미만의 랜덤 실수에 1을 더해 1에서 10 범위의 랜덤 실수를 구한다.
+3) Math.floor로 1에서 10 범위의 랜덤 실수의 소수점 이하를 떼어 버린 다음 정수를 반환한다.
+*/
+const random = Math.floor(Math.random() * 10 + 1);
+console.log(random); // 1에서 10 범위의 정수
+```
+
+### 29.2.7 Math.pow
+
+첫번째 인수를 밑으로, 두번째 인수를 지수로 거듭제곱한 결과를 반환한다.
+
+```js
+Math.pow(2, 8); // -> 256
+Math.pow(2, -1); // -> 0.5
+Math.pow(2); // -> NaN
+```
+
+지수 연산자가 가독성이 더 좋다.
+
+```js
+// ES7 지수 연산자
+2 ** (2 ** 2); // -> 16
+Math.pow(Math.pow(2, 2), 2); // -> 16
+```
+
+### 29.2.8 Math.max
+
+인수로 전달된 수 중 최댓값을 반환한다. 인수가 전달되지 않으면 -Infinity를 반환한다.
+
+```js
+Math.max(1); // -> 1
+Math.max(1, 2); // -> 2
+Math.max(1, 2, 3); // -> 3
+Math.max(); // -> -Infinity
+```
+
+배열을 전달받아 최대값을 구하려면 Function.prototype.apply 메서드 또는 스프레드 문법을 사용한다.
+
+```js
+// 배열 요소 중에서 최대값 취득
+Math.max.apply(null, [1, 2, 3]); // -> 3
+
+// ES6 스프레드 문법
+Math.max(...[1, 2, 3]); // -> 3
+```
+
+### 29.2.9 Math.min
+
+인수 중 가장 작은 수를 반환한다. 인수가 전달되지 않으면 Infinity를 반환한다.
+
+```js
+Math.min(1); // -> 1
+Math.min(1, 2); // -> 1
+Math.min(1, 2, 3); // -> 1
+Math.min(); // -> Infinity
+```
+
+배열 중 최소값을 구하려면 Function.prototype.apply 메서드 또는 스프레드 문법을 사용한다.
+
+```js
+// 배열 요소 중에서 최소값 취득
+Math.min.apply(null, [1, 2, 3]); // -> 1
+
+// ES6 스프레드 문법
+Math.min(...[1, 2, 3]); // -> 1
+```
