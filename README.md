@@ -7953,3 +7953,299 @@ today.toLocaleTimeString("ja-JP"); // -> 12:30:00
   setTimeout(printNow, 1000);
 })();
 ```
+
+# 31장 RegExp
+## 31.1 정규 표현식이란?
+> 일정한 패턴을 가진 문자열의 집합을 표현하기 위해 사용하는 형식 언어
+
+- 자바스크립트의 고유 문법이 아님
+- 문자열 대상 패턴 매칭 기능 제공 - 특정 패턴과 일치하는 문자열을 검색하거나 추출 또는 치환 가능
+- 주석과 공백을 허용하지 않고, 여러 기호를 혼합해서 가독성이 좋지 않음
+
+## 31.2 정규 표현식 생성
+> 리터럴과 생성자 함수를 이용 가능하다
+
+---
+리터럴은 패턴과 플래그로 구성된다. `//`는 시작기호와 종료 기호이며 이 사이에 패턴이 들어간다. 종료 기호 뒤에 오는 것이 플래그이다.
+
+리터럴은 다음과 같이 생성한다
+```js
+const target = 'Is this all there is?';
+
+// 패턴: is
+// 플래그: i => 대소문자를 구별하지 않고 검색한다.
+const regexp = /is/i;
+
+// test 메서드는 target 문자열에 대해 정규표현식 regexp의 패턴을 검색하여 매칭 결과를 불리언 값으로 반환한다.
+regexp.test(target); // -> true
+```
+
+생성자 함수를 사용할수도 있다.
+```js
+const target = 'Is this all there is?';
+
+const regexp = new RegExp(/is/i); // ES6
+// const regexp = new RegExp(/is/, 'i');
+// const regexp = new RegExp('is', 'i');
+
+regexp.test(target); // -> true
+```
+## 31.3 RegExp 메서드
+### 31.3.1 exec
+> 인수로 전달받은 문자열에 대해 정규 표현식의 패턴을 검색해 매칭 **결과를 배열로 반환한다.** 결과가 없으면 `null`을 반환한다.
+```js
+const target = 'Is this all there is?';
+const regExp = /is/;
+
+regExp.exec(target); // -> ["is", index: 5, input: "Is this all there is?", groups: undefined]
+```
+
+### 31.3.2 test
+
+> 인수로 전달받은 문자열에 대해 정규 표현식의 패턴을 검색해 매칭 **결과를 불리언으로 반환한다.** 
+```js
+const target = 'Is this all there is?';
+const regExp = /is/;
+
+regExp.test(target); // -> true
+```
+
+### 31.3.3 match
+> 인수로 전달받은 문자열에 대해 정규 표현식의 패턴을 검색해 매칭 **결과를 배열로 반환한다.** g플래그가 지정되면 모든 매칭 결과를 배열로 반환한다.
+```js
+const target = 'Is this all there is?';
+const regExp = /is/;
+
+target.match(regExp); // -> ["is", index: 5, input: "Is this all there is?", groups: undefined]
+```
+
+```js
+const target = 'Is this all there is?';
+const regExp = /is/g;
+
+target.match(regExp); // -> ["is", "is"]
+
+```
+
+## 31.4 플래그
+> 검색 방식을 설정한다
+- i: 대소문자를 구별하지 않고 패턴을 검색
+- g: 패턴과 일치하는 모든 문자열을 전역 검색
+- m: 문자열의 행이 바뀌어도 패턴 검색을 계속한다.
+
+플래그는 옵션이며, 하나 이상의 플래그를 사용할 수 있다. 
+
+플래그를 사용하지 않으면, 대소문자 구별해서 일치하는 첫번째 대상만 검색하고 종료한다.
+
+```js
+const target = 'Is this all there is?';
+
+// target 문자열에서 is 문자열을 대소문자를 구별하여 한 번만 검색한다.
+target.match(/is/);
+// -> ["is", index: 5, input: "Is this all there is?", groups: undefined]
+
+// target 문자열에서 is 문자열을 대소문자를 구별하지 않고 한 번만 검색한다.
+target.match(/is/i);
+// -> ["Is", index: 0, input: "Is this all there is?", groups: undefined]
+
+// target 문자열에서 is 문자열을 대소문자를 구별하여 전역 검색한다.
+target.match(/is/g);
+// -> ["is", "is"]
+
+// target 문자열에서 is 문자열을 대소문자를 구별하지 않고 전역 검색한다.
+target.match(/is/ig);
+// -> ["Is", "is", "is"]
+```
+
+## 31.5 패턴
+> 일정한 규칙을 표현하기 위해 사용.
+* `/`를 사용해 열고 닫음
+* 따옴표 생략
+
+### 31.5.1 문자열 검색
+패턴에 문자 혹은 문자열을 지정하면 검색 대상 문자열에서 패턴으로 지정한 문자 또는 문자열을 검색함
+* 플래그를 생략했을 경우 대소문자 구별해 정규 표현식과 매치한 첫 번째 결과만 반환한다.
+```js
+const target = 'Is this all there is?';
+
+// 'is' 문자열과 매치하는 패턴. 플래그가 생략되었으므로 대소문자를 구별한다.
+const regExp = /is/;
+
+// target과 정규 표현식이 매치하는지 테스트한다.
+regExp.test(target); // -> true
+
+// target과 정규 표현식의 매칭 결과를 구한다.
+target.match(regExp);
+// -> ["is", index: 5, input: "Is this all there is?", groups: undefined]
+```
+
+대소문자를 구별하지 않으려면 i를 사용한다.
+```js
+const target = 'Is this all there is?';
+
+// 'is' 문자열과 매치하는 패턴. 플래그 i를 추가하면 대소문자를 구별하지 않는다.
+const regExp = /is/i;
+
+target.match(regExp);
+// -> ["Is", index: 0, input: "Is this all there is?", groups: undefined]
+```
+
+문자열을 전역 검색하려면 g를 사용한다.
+```js
+const target = 'Is this all there is?';
+
+// 'is' 문자열과 매치하는 패턴.
+// 플래그 g를 추가하면 대상 문자열 내에서 패턴과 일치하는 모든 문자열을 전역 검색한다.
+const regExp = /is/ig;
+
+target.match(regExp); // -> ["Is", "is", "is"]
+```
+
+### 31.5.2 임의의 문자열 검색
+.은 임의의 문자열 하나를 의미한다.
+```js
+const target = 'Is this all there is?';
+
+// 임의의 3자리 문자열을 대소문자를 구별하여 전역 검색한다.
+const regExp = /.../g;
+
+target.match(regExp); // -> ["Is ", "thi", "s a", "ll ", "the", "re ", "is?"]
+```
+
+### 31.5.3 반복 검색
+{m,n}은 최소 m개, 최대 n개의 패턴이 반복됨을 의미한다. 콤마 뒤에 공백이 있으면 정상 작동하지 않는다.
+```js
+const target = 'A AA B BB Aa Bb AAA';
+
+// 'A'가 최소 1번, 최대 2번 반복되는 문자열을 전역 검색한다.
+const regExp = /A{1,2}/g;
+
+target.match(regExp); // -> ["A", "AA", "A", "AA", "A"]
+```
+{n}은 패턴이 n번 반복된다.
+```js
+const target = 'A AA B BB Aa Bb AAA';
+
+// 'A'가 2번 반복되는 문자열을 전역 검색한다.
+const regExp = /A{2}/g;
+
+target.match(regExp); // -> ["AA", "AA"]
+```
+{n,}은 패턴이 최소 n번 이상 반복된다.
+```js
+const target = 'A AA B BB Aa Bb AAA';
+
+// 'A'가 최소 2번 이상 반복되는 문자열을 전역 검색한다.
+const regExp = /A{2,}/g;
+
+target.match(regExp); // -> ["AA", "AAA"]
+```
++ 는 패턴이 최소 한번 이상 반복된다.
+```js
+const target = 'A AA B BB Aa Bb AAA';
+
+// 'A'가 최소 한 번 이상 반복되는 문자열('A, 'AA', 'AAA', ...)을 전역 검색한다.
+const regExp = /A+/g;
+
+target.match(regExp); // -> ["A", "AA", "A", "AAA"]
+```
+?는 패턴이 최대 한번까지 반복된다. 즉, 반복되지 않을 수도 있다
+```js
+const target = 'color colour';
+
+// 'colo' 다음 'u'가 최대 한 번(0번 포함) 이상 반복되고 'r'이 이어지는 문자열 'color', 'colour'를 전역 검색한다.
+const regExp = /colou?r/g;
+
+target.match(regExp); // -> ["color", "colour"]
+```
+
+### 31.5.4 OR 검색
+`|` 는 or의 의미이다. 
+```js
+const target = 'A AA B BB Aa Bb';
+
+// 'A' 또는 'B'를 전역 검색한다.
+const regExp = /A|B/g;
+
+target.match(regExp); // -> ["A", "A", "A", "B", "B", "B", "A", "B"]
+```
+분해되지 않은 단어 레벨로 검색하고 싶으면 + 를 사용한다.
+```js
+const target = 'A AA B BB Aa Bb';
+
+// 'A' 또는 'B'가 한 번 이상 반복되는 문자열을 전역 검색한다.
+// 'A', 'AA', 'AAA', ... 또는 'B', 'BB', 'BBB', ...
+const regExp = /A+|B+/g;
+
+target.match(regExp); // -> ["A", "AA", "B", "BB", "A", "B"]
+```
+범위를 지정하려면 `[]` 내에 `-` 를 사용한다.
+```js
+const target = 'A AA B BB Aa Bb';
+
+// 'A' 또는 'B'가 한 번 이상 반복되는 문자열을 전역 검색한다.
+// 'A', 'AA', 'AAA', ... 또는 'B', 'BB', 'BBB', ...
+const regExp = /[AB]+/g;
+
+target.match(regExp); // -> ["A", "AA", "B", "BB", "A", "B"]
+```
+대소문자 구별없이 알파벳을 검색하려면 다음과 같다.
+```js
+const target = 'A AA BB ZZ Aa Bb';
+
+// 'A' ~ 'Z'가 한 번 이상 반복되는 문자열을 전역 검색한다.
+// 'A', 'AA', 'AAA', ... 또는 'B', 'BB', 'BBB', ... ~ 또는 'Z', 'ZZ', 'ZZZ', ...
+const regExp = /[A-Z]+/g;
+
+target.match(regExp); // -> ["A", "AA", "BB", "ZZ", "A", "B"]
+```
+`\d` 는 숫자를 의미하며, `\D` 는 숫자가 아닌 문자를 의미한다.
+```js
+const target = 'AA BB 12,345';
+
+// '0' ~ '9' 또는 ','가 한 번 이상 반복되는 문자열을 전역 검색한다.
+let regExp = /[\d,]+/g;
+
+target.match(regExp); // -> ["12,345"]
+
+// '0' ~ '9'가 아닌 문자(숫자가 아닌 문자) 또는 ','가 한 번 이상 반복되는 문자열을 전역 검색한다.
+regExp = /[\D,]+/g;
+
+target.match(regExp); // -> ["AA BB ", ","]
+```
+
+`\w` 는 알파벳, 숫자, 언더스코어를 의미한다. `\W` 는 알파벳, 숫자, 언더스코어가 아닌 문자이다.
+
+### 31.5.5 NOT 검색
+`[...]` 내부의 `^` 은 not의 의미를 가진다.
+```js
+const target = 'AA BB 12 Aa Bb';
+
+// 숫자를 제외한 문자열을 전역 검색한다.
+const regExp = /[^0-9]+/g;
+
+target.match(regExp); // -> ["AA BB ", " Aa Bb"]
+```
+
+### 31.5.6 시작 위치로 검색
+`[...]` 외부의 `^` 은 시작을 의미한다.
+```js
+const target = 'https://poiemaweb.com';
+
+// 'https'로 시작하는지 검사한다.
+const regExp = /^https/;
+
+regExp.test(target); // -> true
+```
+
+### 31.5.7 마지막 위치로 검색
+`$` 는 문자열의 마지막을 의미한다.
+```js
+const target = 'https://poiemaweb.com';
+
+// 'com'으로 끝나는지 검사한다.
+const regExp = /com$/;
+
+regExp.test(target); // -> true
+
+```
