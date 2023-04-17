@@ -7955,7 +7955,9 @@ today.toLocaleTimeString("ja-JP"); // -> 12:30:00
 ```
 
 # 31장 RegExp
+
 ## 31.1 정규 표현식이란?
+
 > 일정한 패턴을 가진 문자열의 집합을 표현하기 위해 사용하는 형식 언어
 
 - 자바스크립트의 고유 문법이 아님
@@ -7963,14 +7965,17 @@ today.toLocaleTimeString("ja-JP"); // -> 12:30:00
 - 주석과 공백을 허용하지 않고, 여러 기호를 혼합해서 가독성이 좋지 않음
 
 ## 31.2 정규 표현식 생성
+
 > 리터럴과 생성자 함수를 이용 가능하다
 
 ---
+
 리터럴은 패턴과 플래그로 구성된다. `//`는 시작기호와 종료 기호이며 이 사이에 패턴이 들어간다. 종료 기호 뒤에 오는 것이 플래그이다.
 
 리터럴은 다음과 같이 생성한다
+
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 
 // 패턴: is
 // 플래그: i => 대소문자를 구별하지 않고 검색한다.
@@ -7981,8 +7986,9 @@ regexp.test(target); // -> true
 ```
 
 생성자 함수를 사용할수도 있다.
+
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 
 const regexp = new RegExp(/is/i); // ES6
 // const regexp = new RegExp(/is/, 'i');
@@ -7990,11 +7996,15 @@ const regexp = new RegExp(/is/i); // ES6
 
 regexp.test(target); // -> true
 ```
+
 ## 31.3 RegExp 메서드
+
 ### 31.3.1 exec
+
 > 인수로 전달받은 문자열에 대해 정규 표현식의 패턴을 검색해 매칭 **결과를 배열로 반환한다.** 결과가 없으면 `null`을 반환한다.
+
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 const regExp = /is/;
 
 regExp.exec(target); // -> ["is", index: 5, input: "Is this all there is?", groups: undefined]
@@ -8002,43 +8012,47 @@ regExp.exec(target); // -> ["is", index: 5, input: "Is this all there is?", grou
 
 ### 31.3.2 test
 
-> 인수로 전달받은 문자열에 대해 정규 표현식의 패턴을 검색해 매칭 **결과를 불리언으로 반환한다.** 
+> 인수로 전달받은 문자열에 대해 정규 표현식의 패턴을 검색해 매칭 **결과를 불리언으로 반환한다.**
+
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 const regExp = /is/;
 
 regExp.test(target); // -> true
 ```
 
 ### 31.3.3 match
+
 > 인수로 전달받은 문자열에 대해 정규 표현식의 패턴을 검색해 매칭 **결과를 배열로 반환한다.** g플래그가 지정되면 모든 매칭 결과를 배열로 반환한다.
+
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 const regExp = /is/;
 
 target.match(regExp); // -> ["is", index: 5, input: "Is this all there is?", groups: undefined]
 ```
 
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 const regExp = /is/g;
 
 target.match(regExp); // -> ["is", "is"]
-
 ```
 
 ## 31.4 플래그
+
 > 검색 방식을 설정한다
+
 - i: 대소문자를 구별하지 않고 패턴을 검색
 - g: 패턴과 일치하는 모든 문자열을 전역 검색
 - m: 문자열의 행이 바뀌어도 패턴 검색을 계속한다.
 
-플래그는 옵션이며, 하나 이상의 플래그를 사용할 수 있다. 
+플래그는 옵션이며, 하나 이상의 플래그를 사용할 수 있다.
 
 플래그를 사용하지 않으면, 대소문자 구별해서 일치하는 첫번째 대상만 검색하고 종료한다.
 
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 
 // target 문자열에서 is 문자열을 대소문자를 구별하여 한 번만 검색한다.
 target.match(/is/);
@@ -8053,20 +8067,25 @@ target.match(/is/g);
 // -> ["is", "is"]
 
 // target 문자열에서 is 문자열을 대소문자를 구별하지 않고 전역 검색한다.
-target.match(/is/ig);
+target.match(/is/gi);
 // -> ["Is", "is", "is"]
 ```
 
 ## 31.5 패턴
+
 > 일정한 규칙을 표현하기 위해 사용.
-* `/`를 사용해 열고 닫음
-* 따옴표 생략
+
+- `/`를 사용해 열고 닫음
+- 따옴표 생략
 
 ### 31.5.1 문자열 검색
+
 패턴에 문자 혹은 문자열을 지정하면 검색 대상 문자열에서 패턴으로 지정한 문자 또는 문자열을 검색함
-* 플래그를 생략했을 경우 대소문자 구별해 정규 표현식과 매치한 첫 번째 결과만 반환한다.
+
+- 플래그를 생략했을 경우 대소문자 구별해 정규 표현식과 매치한 첫 번째 결과만 반환한다.
+
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 
 // 'is' 문자열과 매치하는 패턴. 플래그가 생략되었으므로 대소문자를 구별한다.
 const regExp = /is/;
@@ -8080,8 +8099,9 @@ target.match(regExp);
 ```
 
 대소문자를 구별하지 않으려면 i를 사용한다.
+
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 
 // 'is' 문자열과 매치하는 패턴. 플래그 i를 추가하면 대소문자를 구별하지 않는다.
 const regExp = /is/i;
@@ -8091,20 +8111,23 @@ target.match(regExp);
 ```
 
 문자열을 전역 검색하려면 g를 사용한다.
+
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 
 // 'is' 문자열과 매치하는 패턴.
 // 플래그 g를 추가하면 대상 문자열 내에서 패턴과 일치하는 모든 문자열을 전역 검색한다.
-const regExp = /is/ig;
+const regExp = /is/gi;
 
 target.match(regExp); // -> ["Is", "is", "is"]
 ```
 
 ### 31.5.2 임의의 문자열 검색
+
 .은 임의의 문자열 하나를 의미한다.
+
 ```js
-const target = 'Is this all there is?';
+const target = "Is this all there is?";
 
 // 임의의 3자리 문자열을 대소문자를 구별하여 전역 검색한다.
 const regExp = /.../g;
@@ -8113,45 +8136,55 @@ target.match(regExp); // -> ["Is ", "thi", "s a", "ll ", "the", "re ", "is?"]
 ```
 
 ### 31.5.3 반복 검색
+
 {m,n}은 최소 m개, 최대 n개의 패턴이 반복됨을 의미한다. 콤마 뒤에 공백이 있으면 정상 작동하지 않는다.
+
 ```js
-const target = 'A AA B BB Aa Bb AAA';
+const target = "A AA B BB Aa Bb AAA";
 
 // 'A'가 최소 1번, 최대 2번 반복되는 문자열을 전역 검색한다.
 const regExp = /A{1,2}/g;
 
 target.match(regExp); // -> ["A", "AA", "A", "AA", "A"]
 ```
+
 {n}은 패턴이 n번 반복된다.
+
 ```js
-const target = 'A AA B BB Aa Bb AAA';
+const target = "A AA B BB Aa Bb AAA";
 
 // 'A'가 2번 반복되는 문자열을 전역 검색한다.
 const regExp = /A{2}/g;
 
 target.match(regExp); // -> ["AA", "AA"]
 ```
+
 {n,}은 패턴이 최소 n번 이상 반복된다.
+
 ```js
-const target = 'A AA B BB Aa Bb AAA';
+const target = "A AA B BB Aa Bb AAA";
 
 // 'A'가 최소 2번 이상 반복되는 문자열을 전역 검색한다.
 const regExp = /A{2,}/g;
 
 target.match(regExp); // -> ["AA", "AAA"]
 ```
-+ 는 패턴이 최소 한번 이상 반복된다.
+
+- 는 패턴이 최소 한번 이상 반복된다.
+
 ```js
-const target = 'A AA B BB Aa Bb AAA';
+const target = "A AA B BB Aa Bb AAA";
 
 // 'A'가 최소 한 번 이상 반복되는 문자열('A, 'AA', 'AAA', ...)을 전역 검색한다.
 const regExp = /A+/g;
 
 target.match(regExp); // -> ["A", "AA", "A", "AAA"]
 ```
+
 ?는 패턴이 최대 한번까지 반복된다. 즉, 반복되지 않을 수도 있다
+
 ```js
-const target = 'color colour';
+const target = "color colour";
 
 // 'colo' 다음 'u'가 최대 한 번(0번 포함) 이상 반복되고 'r'이 이어지는 문자열 'color', 'colour'를 전역 검색한다.
 const regExp = /colou?r/g;
@@ -8160,18 +8193,22 @@ target.match(regExp); // -> ["color", "colour"]
 ```
 
 ### 31.5.4 OR 검색
-`|` 는 or의 의미이다. 
+
+`|` 는 or의 의미이다.
+
 ```js
-const target = 'A AA B BB Aa Bb';
+const target = "A AA B BB Aa Bb";
 
 // 'A' 또는 'B'를 전역 검색한다.
 const regExp = /A|B/g;
 
 target.match(regExp); // -> ["A", "A", "A", "B", "B", "B", "A", "B"]
 ```
+
 분해되지 않은 단어 레벨로 검색하고 싶으면 + 를 사용한다.
+
 ```js
-const target = 'A AA B BB Aa Bb';
+const target = "A AA B BB Aa Bb";
 
 // 'A' 또는 'B'가 한 번 이상 반복되는 문자열을 전역 검색한다.
 // 'A', 'AA', 'AAA', ... 또는 'B', 'BB', 'BBB', ...
@@ -8179,9 +8216,11 @@ const regExp = /A+|B+/g;
 
 target.match(regExp); // -> ["A", "AA", "B", "BB", "A", "B"]
 ```
+
 범위를 지정하려면 `[]` 내에 `-` 를 사용한다.
+
 ```js
-const target = 'A AA B BB Aa Bb';
+const target = "A AA B BB Aa Bb";
 
 // 'A' 또는 'B'가 한 번 이상 반복되는 문자열을 전역 검색한다.
 // 'A', 'AA', 'AAA', ... 또는 'B', 'BB', 'BBB', ...
@@ -8189,9 +8228,11 @@ const regExp = /[AB]+/g;
 
 target.match(regExp); // -> ["A", "AA", "B", "BB", "A", "B"]
 ```
+
 대소문자 구별없이 알파벳을 검색하려면 다음과 같다.
+
 ```js
-const target = 'A AA BB ZZ Aa Bb';
+const target = "A AA BB ZZ Aa Bb";
 
 // 'A' ~ 'Z'가 한 번 이상 반복되는 문자열을 전역 검색한다.
 // 'A', 'AA', 'AAA', ... 또는 'B', 'BB', 'BBB', ... ~ 또는 'Z', 'ZZ', 'ZZZ', ...
@@ -8199,9 +8240,11 @@ const regExp = /[A-Z]+/g;
 
 target.match(regExp); // -> ["A", "AA", "BB", "ZZ", "A", "B"]
 ```
+
 `\d` 는 숫자를 의미하며, `\D` 는 숫자가 아닌 문자를 의미한다.
+
 ```js
-const target = 'AA BB 12,345';
+const target = "AA BB 12,345";
 
 // '0' ~ '9' 또는 ','가 한 번 이상 반복되는 문자열을 전역 검색한다.
 let regExp = /[\d,]+/g;
@@ -8217,9 +8260,11 @@ target.match(regExp); // -> ["AA BB ", ","]
 `\w` 는 알파벳, 숫자, 언더스코어를 의미한다. `\W` 는 알파벳, 숫자, 언더스코어가 아닌 문자이다.
 
 ### 31.5.5 NOT 검색
+
 `[...]` 내부의 `^` 은 not의 의미를 가진다.
+
 ```js
-const target = 'AA BB 12 Aa Bb';
+const target = "AA BB 12 Aa Bb";
 
 // 숫자를 제외한 문자열을 전역 검색한다.
 const regExp = /[^0-9]+/g;
@@ -8228,9 +8273,11 @@ target.match(regExp); // -> ["AA BB ", " Aa Bb"]
 ```
 
 ### 31.5.6 시작 위치로 검색
+
 `[...]` 외부의 `^` 은 시작을 의미한다.
+
 ```js
-const target = 'https://poiemaweb.com';
+const target = "https://poiemaweb.com";
 
 // 'https'로 시작하는지 검사한다.
 const regExp = /^https/;
@@ -8239,13 +8286,461 @@ regExp.test(target); // -> true
 ```
 
 ### 31.5.7 마지막 위치로 검색
+
 `$` 는 문자열의 마지막을 의미한다.
+
 ```js
-const target = 'https://poiemaweb.com';
+const target = "https://poiemaweb.com";
 
 // 'com'으로 끝나는지 검사한다.
 const regExp = /com$/;
 
 regExp.test(target); // -> true
+```
 
+# 32장 String
+
+## 32.1 String 생성자 함수
+
+String 객체는 생성자 함수 객체이다. 따라서 `new` 연산자와 함께 호출해 String 인스턴스를 생성할 수 있다.
+인수를 전달하지 않고 `new` 와 함께 호출하면 `[[StringData]]` 내부 슬롯에 빈 문자열을 할당한 String 래퍼 객체를 생성한다.
+
+```js
+const strObj = new String();
+console.log(strObj); // String {length: 0, [[PrimitiveValue]]: ""}
+```
+
+이때 접근할 수 없는 `[[PrimitiveValue]]` 내부 프로퍼티는 `[[StringData]]` 내부 슬롯을 가리킨다.
+
+만약에 인수로 문자열을 전달하면서 `new` 연산자와 함께 호출하면 `[[StringData]]` 내부 슬롯에 인수로 전달받은 문자열을 할당한 String 래퍼 객체를 생성한다.
+
+```js
+const strObj = new String("Lee");
+console.log(strObj);
+// String {0: "L", 1: "e", 2: "e", length: 3, [[PrimitiveValue]]: "Lee"}
+```
+
+String 래퍼 객체는 `length` 프로퍼티와 인덱스를 나타내는 숫자 형식의 문자열을 프로퍼티 키로, 각 문자열은 프로퍼티 값으로 가지는 유사 배열 객체이면서 이터러블이다. 따라서 인덱스를 사용해 각 문자에 접근이 가능하다. 단, 문자열은 원시 값이므로 변경할 수 없다. 이때 에러는 발생하지 않는다.
+
+```js
+// 문자열은 원시값이므로 변경할 수 없다. 이때 에러가 발생하지 않는다.
+strObj[0] = "S";
+console.log(strObj); // 'Lee'
+```
+
+인수로 문자열이 아닌 값을 전달하면 문자열로 강제 변환한 후, `[[StringData]]` 내부 슬롯에 변환된 문자열을 할당한 String 래퍼 객체를 생성한다.
+
+```js
+let strObj = new String(123);
+console.log(strObj);
+// String {0: "1", 1: "2", 2: "3", length: 3, [[PrimitiveValue]]: "123"}
+
+strObj = new String(null);
+console.log(strObj);
+// String {0: "n", 1: "u", 2: "l", : "l", length: 4, [[PrimitiveValue]]: "null"}
+```
+
+`new` 연산자를 사용하지 않고 String 생성자 함수를 호출하면 인스턴스가 아닌 문자열을 반환한다.
+
+```js
+// 숫자 타입 => 문자열 타입
+String(1); // -> "1"
+String(NaN); // -> "NaN"
+String(Infinity); // -> "Infinity"
+
+// 불리언 타입 => 문자열 타입
+String(true); // -> "true"
+String(false); // -> "false"
+```
+
+## 32.2 length 프로퍼티
+
+문자열에 있는 문자 개수를 반환한다.
+
+```js
+"Hello".length; // -> 5
+"안녕하세요!".length; // -> 6
+```
+
+## 32.3 String 메서드
+
+String의 메서드는 언제나 새로운 문자열을 반환한다.
+
+### 32.3.1 String.prototype.indexOf
+
+> 대상 문자열에서 인수로 전달받은 문자열을 검색해 첫 번째 인덱스를 반환한다. 검색에 실패하면 -1을 반환한다.
+
+```js
+const str = "Hello World";
+
+// 문자열 str에서 'l'을 검색하여 첫 번째 인덱스를 반환한다.
+str.indexOf("l"); // -> 2
+
+// 문자열 str에서 'or'을 검색하여 첫 번째 인덱스를 반환한다.
+str.indexOf("or"); // -> 7
+
+// 문자열 str에서 'x'를 검색하여 첫 번째 인덱스를 반환한다. 검색에 실패하면 -1을 반환한다.
+str.indexOf("x"); // -> -1
+```
+
+두번째 인수로 검색을 시작할 인덱스를 전달할 수 있다.
+
+```js
+// 문자열 str의 인덱스 3부터 'l'을 검색하여 첫 번째 인덱스를 반환한다.
+str.indexOf("l", 3); // -> 3
+```
+
+문자열에 특정 문자열이 존재하는지 확인할 때 유용하다.
+
+```js
+if (str.indexOf("Hello") !== -1) {
+  // 문자열 str에 'Hello'가 포함되어 있는 경우에 처리할 내용
+}
+```
+
+물론 이는 `includes` 메서드를 확인하면 가독성이 더 좋다.
+
+```js
+if (str.includes("Hello")) {
+  // 문자열 str에 'Hello'가 포함되어 있는 경우에 처리할 내용
+}
+```
+
+### 32.3.2 String.prototype.search
+
+> 대상 문자열에서 인수로 전달받은 정규 표현식과 매치하는 문자열을 검색해 일치하는 문자열의 인덱스를 반환한다. 검색에 실패하면 -1을 반환한다.
+
+```js
+const str = "Hello world";
+
+// 문자열 str에서 정규 표현식과 매치하는 문자열을 검색하여 일치하는 문자열의 인덱스를 반환한다.
+str.search(/o/); // -> 4
+str.search(/x/); // -> -1
+```
+
+### 32.3.3 String.prototype.includes
+
+> 대상 문자열에서 인수로 전달받은 문자열이 포함되어 있는지를 확인하고 결과를 불리언으로 전달한다.
+
+```js
+const str = "Hello world";
+
+str.includes("Hello"); // -> true
+str.includes(""); // -> true
+str.includes("x"); // -> false
+str.includes(); // -> false
+```
+
+2번째 인수로 검색을 시작할 인덱스를 전달할 수 있다.
+
+```js
+const str = "Hello world";
+
+// 문자열 str의 인덱스 3부터 'l'이 포함되어 있는지 확인
+str.includes("l", 3); // -> true
+str.includes("H", 3); // -> false
+```
+
+### 32.3.4 String.prototype.startsWith
+
+> 대상 문자열이 인수로 전달받은 문자열로 시작하는지를 확인하고 결과를 불리언으로 전달한다.
+
+```js
+const str = "Hello world";
+
+// 문자열 str이 'He'로 시작하는지 확인
+str.startsWith("He"); // -> true
+// 문자열 str이 'x'로 시작하는지 확인
+str.startsWith("x"); // -> false
+```
+
+2번째 인수로 검색을 시작할 인덱스를 전달할 수 있다.
+
+```js
+// 문자열 str의 인덱스 5부터 시작하는 문자열이 ' '로 시작하는지 확인
+str.startsWith(" ", 5); // -> true
+```
+
+### 32.3.5 String.prototype.endsWith
+
+> 대상 문자열이 인수로 전달받은 문자열로 끝나는지를 확인하고 결과를 불리언으로 전달한다.
+
+```js
+const str = "Hello world";
+
+// 문자열 str이 'ld'로 끝나는지 확인
+str.endsWith("ld"); // -> true
+// 문자열 str이 'x'로 끝나는지 확인
+str.endsWith("x"); // -> false
+```
+
+2번째 인수로 검색할 문자열의 길이를 전달할 수 있다.
+
+```js
+// 문자열 str의 처음부터 5자리까지('Hello')가 'lo'로 끝나는지 확인
+str.endsWith("lo", 5); // -> true
+```
+
+### 32.3.6 String.prototype.charAt
+
+> 대상 문자열이 인수로 전달받은 인덱스에 위치한 문자를 검색해 반환한다.
+
+```js
+const str = "Hello";
+
+for (let i = 0; i < str.length; i++) {
+  console.log(str.charAt(i)); // H e l l o
+}
+```
+
+인덱스는 0~(문자열의 길이 -1) 사이의 정수여야 한다. 범위를 벗어난 정수면 빈 문자열을 반환한다.
+
+```js
+// 인덱스가 문자열의 범위(0 ~ str.length-1)를 벗어난 경우 빈문자열을 반환한다.
+str.charAt(5); // -> ''
+```
+
+### 32.3.7 String.prototype.substring
+
+> 대상 문자열에서 첫번째 인수로 받은 인덱스 위치의 문자 ~ 두번째 인수로 전달받은 인덱스에 위치하는 문자의 바로 직전까지의 문자 를 반환한다.
+
+```js
+const str = "Hello World";
+
+// 인덱스 1부터 인덱스 4 이전까지의 부분 문자열을 반환한다.
+str.substring(1, 4); // -> ell
+```
+
+두번째 인수를 생략하면 첫번째 인수의 인덱스 ~ 끝까지의 문자를 반환한다.
+
+```js
+const str = "Hello World";
+
+// 인덱스 1부터 마지막 문자까지 부분 문자열을 반환한다.
+str.substring(1); // -> 'ello World'
+```
+
+첫 번째 인수는 두 번째 인수보다 작아야 정상이지만, 다음과 같은 경우에도 작동한다.
+
+- 첫번째 인수 > 두번째 인수인 경우 둘은 교체된다.
+- 인수 <0 이나 NaN 인 경우 0으로 취급된다.
+- 인수 > 문자열의 길이 인 경우 인수는 문자열의 길이로 취급된다.
+
+```js
+const str = "Hello World"; // str.length == 11
+
+// 첫 번째 인수 > 두 번째 인수인 경우 두 인수는 교환된다.
+str.substring(4, 1); // -> 'ell'
+
+// 인수 < 0 또는 NaN인 경우 0으로 취급된다.
+str.substring(-2); // -> 'Hello World'
+
+// 인수 > 문자열의 길이(str.length)인 경우 인수는 문자열의 길이(str.length)으로 취급된다.
+str.substring(1, 100); // -> 'ello World'
+str.substring(20); // -> ''
+```
+
+`indexOf` 메서드와 함께 사용하면 특정 문자열 기준 앞뒤 부분 문자열을 취득할 수 있다.
+
+```js
+const str = "Hello World";
+
+// 스페이스를 기준으로 앞에 있는 부분 문자열 취득
+str.substring(0, str.indexOf(" ")); // -> 'Hello'
+
+// 스페이스를 기준으로 뒤에 있는 부분 문자열 취득
+str.substring(str.indexOf(" ") + 1, str.length); // -> 'World'
+```
+
+### 32.3.8 String.prototype.slice
+
+> substring과 동일하게 동작한다. 다만 두번째 인수에 음수를 전달할 경우, 문자열의 뒤에서부터 시작해 문자열을 잘라서 반환한다.
+
+```js
+const str = "hello world";
+
+// substring과 slice 메서드는 동일하게 동작한다.
+// 0번째부터 5번째 이전 문자까지 잘라내어 반환
+str.substring(0, 5); // -> 'hello'
+str.slice(0, 5); // -> 'hello'
+
+// 인덱스가 2인 문자부터 마지막 문자까지 잘라내어 반환
+str.substring(2); // -> 'llo world'
+str.slice(2); // -> 'llo world'
+
+// 인수 < 0 또는 NaN인 경우 0으로 취급된다.
+str.substring(-5); // -> 'hello world'
+// slice 메서드는 음수인 인수를 전달할 수 있다. 뒤에서 5자리를 잘라내어 반환한다.
+str.slice(-5); // ⟶ 'world'
+```
+
+### 32.3.9 String.prototype.toUpperCase
+
+> 대상 문자열을 모두 대문자로 변경한 문자열을 반환한다.
+
+```js
+const str = "Hello World!";
+
+str.toUpperCase(); // -> 'HELLO WORLD!'
+```
+
+### 32.3.10 String.prototype.toLowerCase
+
+> 대상 문자열을 모두 소문자로 변경한 문자열을 반환한다.
+
+```js
+const str = "Hello World!";
+
+str.toLowerCase(); // -> 'hello world!'
+```
+
+### 32.3.11 String.prototype.trim
+
+> 대상 문자열의 앞 뒤의 공백 문자를 제거한 문자열을 반환한다.
+
+```js
+const str = "   foo  ";
+
+str.trim(); // -> 'foo'
+```
+
+`trimStart`, `trimEnd` 메서드를 사용해 앞 또는 뒤를 선택할 수 있다.
+
+```js
+const str = "   foo  ";
+
+// String.prototype.{trimStart,trimEnd} : Proposal stage 4
+str.trimStart(); // -> 'foo  '
+str.trimEnd(); // -> '   foo'
+```
+
+`replace` 메서드에 정규표현식을 인수로 전달해 공백 문자를 제거 가능하다.
+
+```js
+const str = "   foo  ";
+
+// 첫 번째 인수로 전달한 정규 표현식에 매치하는 문자열을 두 번째 인수로 전달한 문자열로 치환한다.
+str.replace(/\s/g, ""); // -> 'foo'
+str.replace(/^\s+/g, ""); // -> 'foo  '
+str.replace(/\s+$/g, ""); // -> '   foo'
+```
+
+### 32.3.12 String.prototype.repeat
+
+> 해당 문자열을 인수로 전달받은 정수만큼 반복해 연결한 새로운 문자열을 반환한다. 0일때는 빈 문자열, 음수면 RangeError을 발생시킨다. 인수를 생략하면 0으로 설정된다.
+
+```js
+const str = "abc";
+
+str.repeat(); // -> ''
+str.repeat(0); // -> ''
+str.repeat(1); // -> 'abc'
+str.repeat(2); // -> 'abcabc'
+str.repeat(2.5); // -> 'abcabc' (2.5 → 2)
+str.repeat(-1); // -> RangeError: Invalid count value
+```
+
+### 32.3.13 String.prototype.replace
+
+> 첫번째 인수로 받은 문자열 혹은 정규표현식을 검색해 두번째 인수로 받은 문자열로 치환한 문자열을 반환한다.
+
+```js
+const str = "Hello world";
+
+// str에서 첫 번째 인수 'world'를 검색하여 두 번째 인수 'Lee'로 치환한다.
+str.replace("world", "Lee"); // -> 'Hello Lee'
+```
+
+결과가 여러개면 첫번째 검색 결과만 치환한다.
+
+```js
+const str = "Hello world world";
+
+str.replace("world", "Lee"); // -> 'Hello Lee world'
+```
+
+특수 교체 패턴을 사용할 수 있다.
+
+```js
+const str = "Hello world";
+
+// 특수한 교체 패턴을 사용할 수 있다. ($& => 검색된 문자열)
+str.replace("world", "<strong>$&</strong>");
+```
+
+첫번째 인수로 정규 표현식을 사용할 수 있다.
+
+```js
+const str = "Hello Hello";
+
+// 'hello'를 대소문자를 구별하지 않고 전역 검색한다.
+str.replace(/hello/gi, "Lee"); // -> 'Lee Lee'
+```
+
+두번째 인수로 치환 함수를 전달할 수 있다. 첫번째 인수의 매치 결과를 두번째 인수의 인수로 전달한다.
+
+```js
+// 카멜 케이스를 스네이크 케이스로 변환하는 함수
+function camelToSnake(camelCase) {
+  // /.[A-Z]/g는 임의의 한 문자와 대문자로 이루어진 문자열에 매치한다.
+  // 치환 함수의 인수로 매치 결과가 전달되고, 치환 함수가 반환한 결과와 매치 결과를 치환한다.
+  return camelCase.replace(/.[A-Z]/g, match => {
+    console.log(match); // 'oW'
+    return match[0] + "_" + match[1].toLowerCase();
+  });
+}
+
+const camelCase = "helloWorld";
+camelToSnake(camelCase); // -> 'hello_world'
+
+// 스네이크 케이스를 카멜 케이스로 변환하는 함수
+function snakeToCamel(snakeCase) {
+  // /_[a-z]/g는 _와 소문자로 이루어진 문자열에 매치한다.
+  // 치환 함수의 인수로 매치 결과가 전달되고, 치환 함수가 반환한 결과와 매치 결과를 치환한다.
+  return snakeCase.replace(/_[a-z]]/g, match => {
+    console.log(match); // '_w'
+    return match[1].toUpperCase();
+  });
+}
+
+const snakeCase = "hello_world";
+snakeToCamel(snakeCase); // -> 'helloWorld'
+```
+
+### 32.3.14 String.prototype.split
+
+> 첫번쨰 인수로 전달한 문자열 혹은 정규표현식을 검색해 문자열을 구분하고, 분리된 각 문자열로 이루어진 배열을 반환한다. 빈 문자열이 인수로 전달되면 각 문자가 분리되고, 인수를 생략하면 문자열 전체를 단일 요소로 하는 배열을 반환한다.
+
+```js
+const str = "How are you doing?";
+
+// 공백으로 구분(단어로 구분)하여 배열로 반환한다.
+str.split(" "); // -> ["How", "are", "you", "doing?"]
+
+// \s는 여러 가지 공백 문자(스페이스, 탭 등)를 의미한다. 즉, [\t\r\n\v\f]와 같은 의미다.
+str.split(/\s/); // -> ["How", "are", "you", "doing?"]
+
+// 인수로 빈 문자열을 전달하면 각 문자를 모두 분리한다.
+str.split(""); // -> ["H", "o", "w", " ", "a", "r", "e", " ", "y", "o", "u", " ", "d", "o", "i", "n", "g", "?"]
+
+// 인수를 생략하면 대상 문자열 전체를 단일 요소로 하는 배열을 반환한다.
+str.split(); // -> ["How are you doing?"]
+```
+
+두번째 인수로 배열의 길이를 지정할 수 있다.
+
+```js
+// 공백으로 구분하여 배열로 반환한다. 단, 배열의 길이는 3이다
+str.split(" ", 3); // -> ["How", "are", "you"]
+```
+
+배열을 지정하기에, 배열 메서드를 사용해 문자열을 역순으로 뒤집을 수 있다.
+
+```js
+// 인수로 전달받은 문자열을 역순으로 뒤집는다.
+function reverseString(str) {
+  return str.split("").reverse().join("");
+}
+
+reverseString("Hello world!"); // -> '!dlrow olleH'
 ```
