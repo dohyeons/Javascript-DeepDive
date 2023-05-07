@@ -9678,3 +9678,1051 @@ Rest 프로퍼티 사용이 가능하다. 단, 마지막에 위치해야 한다.
 const { x, ...rest } = { x: 1, y: 2, z: 3 };
 console.log(x, rest); // 1 { y: 2, z: 3 }
 ```
+
+# 39장 DOM
+
+> DOM은 HTML문서의 계층적 구조와 정보를 표현하며 이를 제어할 수 있는 API, 즉 프로퍼티와 메서드를 제공하는 **트리 자료구조**다.
+
+## 39.1 노드
+
+### 39.1.1 HTML요소와 노드 객체
+
+HTML요소는 렌더링 엔진에 의해 파싱되어 DOM을 구성하는 요소 노드 객체로 변환됨.
+
+- 어트리뷰트(속성) - 어트리뷰트 노드
+- 텍스트 콘텐츠 - 텍스트 노드
+
+HTML요소는 중첩 관계에 따라서 부자관계를 가진다. 이러한 관계를 반영해 모든 노드 객체들을 트리자료로 구성한다.
+
+---
+
+**트리 자료구조**
+
+트리 자료구조는 노드들의 **계층관계**로 이뤄진다. 즉, 부모 노드와 자식 노드의 계층적 구조를 표현하는 **비선형 자료구조**이다.
+
+- 하나의 최상위 노드 (= 루트 노드. 부모가 없음)
+  - 0개 이상의 자식 노드를 가짐
+- 리프 노드 (=자식 노드가 없는 노드)
+
+---
+
+**노드 객체로 구성된 트리 자료구조를 DOM, 혹은 DOM트리라고 부르기도 한다.**
+
+### 39.1.2 노드 객체의 타입
+
+다음을 파싱한다고 생각해보자
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <ul>
+      <li id="apple">Apple</li>
+      <li id="banana">Banana</li>
+      <li id="orange">Orange</li>
+    </ul>
+    <script src="app.js"></script>
+  </body>
+</html>
+```
+
+렌더링 엔진은 이를 파싱하여 DOM을 생성한다. DOM을 이루는 노드의 종류는 총 12개가 있으며, 이 중 중요한 노드 타입은 다음과 같다.
+
+**문서 노드**
+
+- DOM트리의 최상위 노드(=루트 노드). document 객체임.
+- HTML 문서 자체를 가리킴.
+- window의 document 프로퍼티에 바인딩 되어 있음
+- JS코드는 분리되어 있어도 하나의 window객체를 공유함. 따라서 하나의 document객체를 바라봄. 즉, 유일함.
+- DOM의 다른 노드에 접근하기 위한 진입점 역할을 한다.
+
+**요소 노드**
+
+- HTML 요소를 가리킴
+- 요소의 중첩에 따라 부자 관계를 가지며, 이 관계를 통해 정보를 구조화함
+- 요소 노드는 문서의 구조를 표현함
+
+**어트리뷰트(속성) 노드**
+
+- HTML의 어트리뷰트(속성)을 가리킴
+- HTML요소와 연결되어 있음
+  - HTML요소의 부모 노드와 연결된게 아님. 즉, 요소 노드의 형제 노드는 아님.
+  - 따라서 어트리뷰트 노드에 접근하기 위해서는 요소 노드에 먼저 접근해야 함
+
+**텍스트 노드**
+
+- HTML요소의 텍스트를 가리킴
+- 문서의 정보를 표현함
+- 요소 노드의 자식 노드. 따라서 텍스트 노드에 접근하기 위해선 요소 노드에 먼저 접근해야 함
+- 리프 노드. 즉, DOM트리의 최종단.
+
+### 39.1.3 노드 객체의 상속 구조
+
+노드 객체는 자신의 구조와 정보를 제공할 수 있는 API를 사용할 수 있다.
+DOM을 구성하는 노드 객체는 호스트 객체이다. 하지만 노드 객체도 자바스크립트 객체이므로 프로토타입에 의한 상속 구조를 가진다.
+
+우선 모든 노드 객체는 Object, EventTarget, Node 인터페이스를 상속받는다.
+
+- 문서 노드 - Document, HTMLDocument 인터페이스
+- 어트리뷰트 노드 - Attr 인터페이스
+- 텍스트 노드 - CharacterData 인터페이스
+- 요소 노드 - Element 인터페이스 + 각 태그별 인터페이스(HTMLUListElement 등)
+
+예를 들어, input 요소를 파싱하여 객체화한 input 요소 노드 객체는 HTMLInpuElement, HTMLElement, Element, Node, EventTarget, Object의 prototype에 바인딩 된 프로토타입 객체를 상속받는다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <input type="text" />
+    <script>
+      // input 요소 노드 객체를 선택
+      const $input = document.querySelector("input");
+
+      // input 요소 노드 객체의 프로토타입 체인
+      console.log(
+        Object.getPrototypeOf($input) === HTMLInputElement.prototype,
+        Object.getPrototypeOf(HTMLInputElement.prototype) ===
+          HTMLElement.prototype,
+        Object.getPrototypeOf(HTMLElement.prototype) === Element.prototype,
+        Object.getPrototypeOf(Element.prototype) === Node.prototype,
+        Object.getPrototypeOf(Node.prototype) === EventTarget.prototype,
+        Object.getPrototypeOf(EventTarget.prototype) === Object.prototype
+      ); // 모두 true
+    </script>
+  </body>
+</html>
+```
+
+input요소 노드 객체는 다양한 특성을 가지는 객체이고, 특성을 나타내는 기능들을 상속을 통해 제공받는다.
+|input 요소 노드 객체의 특성|프로토타입을 제공하는 객체|
+|--|--|
+|객체|Object|
+|이벤트를 발생시키는 객체|EventTarget|
+|트리 자료구조의 노드 객체|Node|
+|브라우저가 렌더링할 수 있는 웹 문서의 요소를 표현하는 객체| Element|
+|웹 문서의 요소 중에서 HTML요소를 표현하는 객체|HTMLElement|
+|HTML 요소 중에서 input 요소를 표현하는 객체|HTMLInputElement|
+
+이러한 노드 객체의 상속 구조는 개발자 도구의 Elements 패널 우측의 Properties 패널에서 확인 가능하다.
+
+노드 객체는 공통적으로 가지는 기능과, 노드 타입에 따라 고유한 기능이 있다.
+
+---
+
+**공통적인 기능**
+
+모든 노드는 이벤트를 발생시킬 수 있는데, 이벤트와 관련된 기능(addEventListner 기능 등)은 EventTarget 인터페이스가 제공한다.
+트리 탐색 기능이나 노드 정보 제공 기능은 Node 인터페이스가 담당한다.
+요소 노드가 가지는 공통적인 기능은 HTMLElement 인터페이스가 담당한다.
+
+**요소에 따라 고유한 기능**
+
+필요한 기능을 제공하는 인터페이스는 HTML 요소의 종류에 따라 각각 다르다.
+
+---
+
+공통된 기능일수록 프로토타입 체인의 상위, 개별적인 고유 기능일수록 프로토타입 체인의 하위에 프로토타입 체인을 구축하여 상속 구조를 가진다.
+
+DOM은 HTML 문서의 계층적 구조와 정보를 표현하는 것은 물론 노드 객체의 종류, 즉, 노드 타입에 따라 피룡한 기능을 프로퍼티와 메서드의 집합인 DOM API로 제공한다. 이 DOM API를 통해 HTML 구조나 내용 또는 스타일 등을 동적으로 조작할 수 있다.
+
+즉 중요한 것은 DOM API를 통해 노드에 접근하고, HTML의 구조와 내용, 스타일 등을 동적으로 변경하는 방법을 익히는 것이다.
+
+## 39.2 요소 노트 취득
+
+HTML 구조와 내용, 스타일등을 동적으로 변경하려면, 먼저 **요소 노드를 취득해야한다.** 요소 노드의 취득은 HTML요소를 조작하는 시작점이다.
+
+### 39.2.1 id를 이용한 요소 노드 취득
+
+Document.prototype.getElementById 메서드는 인수로 전달한 id 값을 갖는 하나의 요소 노드를 탐색해 반환한다. Document.prototype의 프로퍼티이므로, 반드시 document 노드를 통해 호출해야한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul>
+      <li id="apple">Apple</li>
+      <li id="banana">Banana</li>
+      <li id="orange">Orange</li>
+    </ul>
+    <script>
+      // id 값이 'banana'인 요소 노드를 탐색하여 반환한다.
+      // 두 번째 li 요소가 파싱되어 생성된 요소 노드가 반환된다.
+      const $elem = document.getElementById("banana");
+
+      // 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
+      $elem.style.color = "red";
+    </script>
+  </body>
+</html>
+```
+
+id값은 문서 내에서 유일한 값이어야 한다. HTML 문서 내에서 id가 여러개 중복되더라도 오류를 내지 않는다는 점에 주의하자. 이때는 해당 id값을 가지는 첫번째 요소를 반환한다. **getElementById**는 언제나 단 하나의 요소 노드를 반환한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul>
+      <li id="banana">Apple</li>
+      <li id="banana">Banana</li>
+      <li id="banana">Orange</li>
+    </ul>
+    <script>
+      // getElementById 메서드는 언제나 단 하나의 요소 노드를 반환한다.
+      // 첫 번째 li 요소가 파싱되어 생성된 요소 노드가 반환된다.
+      const $elem = document.getElementById("banana");
+
+      // 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
+      $elem.style.color = "red";
+    </script>
+  </body>
+</html>
+```
+
+해당 id값을 가지는 HTML 요소가 존재하지 않는 경우 null을 반환한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul>
+      <li id="apple">Apple</li>
+      <li id="banana">Banana</li>
+      <li id="orange">Orange</li>
+    </ul>
+    <script>
+      // id 값이 'grape'인 요소 노드를 탐색하여 반환한다. null이 반환된다.
+      const $elem = document.getElementById("grape");
+
+      // 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
+      $elem.style.color = "red";
+      // -> TypeError: Cannot read property 'style' of null
+    </script>
+  </body>
+</html>
+```
+
+HTML요소에 id 속성을 부여하면, id값과 동일한 이름의 전역 변수가 암묵적으로 선언되고 해당 노드 객체가 할당되는 효과기 있다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="foo"></div>
+    <script>
+      // id 값과 동일한 이름의 전역 변수가 암묵적으로 선언되고 해당 노드 객체가 할당된다.
+      console.log(foo === document.getElementById("foo")); // true
+
+      // 암묵적 전역으로 생성된 전역 프로퍼티는 삭제되지만 전역 변수는 삭제되지 않는다.
+      delete foo;
+      console.log(foo); // <div id="foo"></div>
+    </script>
+  </body>
+</html>
+```
+
+하지만 id값과 동일한 이름의 전역 변수가 선언되어 있으면 이 전역 변수에 노드 객체가 재할당되지 않는다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="foo"></div>
+    <script>
+      let foo = 1;
+
+      // id 값과 동일한 이름의 전역 변수가 이미 선언되어 있으면 노드 객체가 재할당되지 않는다.
+      console.log(foo); // 1
+    </script>
+  </body>
+</html>
+```
+
+### 39.2.2 태그 이름을 이용한 요소 노드 취득
+
+Document.prototype/Element.prototype.getElementsByTagName 메서드는 인수로 전달한 태그 이름을 가지는 모든 요소 노드들을 탐색하여 반환한다. 이 메서드는 여러 요소 노드 객체를 가지는 DOM 컬랙션 객체인 HTMLCollection 객체를 반환한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul>
+      <li id="apple">Apple</li>
+      <li id="banana">Banana</li>
+      <li id="orange">Orange</li>
+    </ul>
+    <script>
+      // 태그 이름이 li인 요소 노드를 모두 탐색하여 반환한다.
+      // 탐색된 요소 노드들은 HTMLCollection 객체에 담겨 반환된다.
+      // HTMLCollection 객체는 유사 배열 객체이면서 이터러블이다.
+      const $elems = document.getElementsByTagName("li");
+
+      // 취득한 모든 요소 노드의 style.color 프로퍼티 값을 변경한다.
+      // HTMLCollection 객체를 배열로 변환하여 순회하며 color 프로퍼티 값을 변경한다.
+      [...$elems].forEach(elem => {
+        elem.style.color = "red";
+      });
+    </script>
+  </body>
+</html>
+```
+
+함수의 하나의 값만 반환할 수 있으므로, 여러개의 값을 반환하려면 객체 혹은 배열같은 자료구조에 담아야 한다. HTMLCollection 객체는 유사 배열 객체이면서 이터러블이다.
+
+HTML 문서의 모든 요소 노드를 취득하려면 \* 를 인수로 전달한다.
+
+```js
+// 모든 요소 노드를 탐색하여 반환한다.
+const $all = document.getElementsByTagName("*");
+// -> HTMLCollection(8) [html, head, body, ul, li#apple, li#banana, li#orange, script, apple: li#apple, banana: li#banana, orange: li#orange]
+```
+
+getElementsByTagName 메서드는 Document.prototype과 Element.prototype에 정의된 메서드가 있다.
+
+- Document.prototype.getElementsByTagName - document를 통해 호출하며 DOM 전체에서 요소 노드를 탐색해 반환.
+- Element.prototype.getElementsByTagName - 특정 요소 노드를 통해 호출, 해당 요소 노드의 자손 노드 중에서 요소 노드를 탐색하여 반환
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits">
+      <li>Apple</li>
+      <li>Banana</li>
+      <li>Orange</li>
+    </ul>
+    <ul>
+      <li>HTML</li>
+    </ul>
+    <script>
+      // DOM 전체에서 태그 이름이 li인 요소 노드를 모두 탐색하여 반환한다.
+      const $lisFromDocument = document.getElementsByTagName("li");
+      console.log($lisFromDocument); // HTMLCollection(4) [li, li, li, li]
+
+      // #fruits 요소의 자손 노드 중에서 태그 이름이 li인 요소 노드를 모두
+      // 탐색하여 반환한다.
+      const $fruits = document.getElementById("fruits");
+      const $lisFromFruits = $fruits.getElementsByTagName("li");
+      console.log($lisFromFruits); // HTMLCollection(3) [li, li, li]
+    </script>
+  </body>
+</html>
+```
+
+만약 해당 태그 이름을 가지는 요소가 없을 경우 빈 HTMLCollection 객체를 반환한다.
+
+### 39.2.3 class 를 통해 요소 노드 취득
+
+Document.prototype/Element.prototype.getElementsByClassName 메서드는 인수로 전달한 class 어트리뷰트 값을 갖는 모든 요소 노드들을 탐색하여 반환한다. 공백으로 구분해 여러 개의 class를 지정할 수 있다. 이 메서드 또한 HTMLCollection 객체를 반환한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul>
+      <li class="fruit apple">Apple</li>
+      <li class="fruit banana">Banana</li>
+      <li class="fruit orange">Orange</li>
+    </ul>
+    <script>
+      // class 값이 'fruit'인 요소 노드를 모두 탐색하여 HTMLCollection 객체에 담아 반환한다.
+      const $elems = document.getElementsByClassName("fruit");
+
+      // 취득한 모든 요소의 CSS color 프로퍼티 값을 변경한다.
+      [...$elems].forEach(elem => {
+        elem.style.color = "red";
+      });
+
+      // class 값이 'fruit apple'인 요소 노드를 모두 탐색하여 HTMLCollection 객체에 담아 반환한다.
+      const $apples = document.getElementsByClassName("fruit apple");
+
+      // 취득한 모든 요소 노드의 style.color 프로퍼티 값을 변경한다.
+      [...$apples].forEach(elem => {
+        elem.style.color = "blue";
+      });
+    </script>
+  </body>
+</html>
+```
+
+getElementsByClassName 메서드는 Document.prototype과 Element.prototype에 정의된 메서드가 있다.
+
+- Document.prototype.getElementsByClassName - document를 통해 호출하며 DOM 전체에서 요소 노드를 탐색해 반환.
+- Element.prototype.getElementsByClassName - 특정 요소 노드를 통해 호출, 해당 요소 노드의 자손 노드 중에서 요소 노드를 탐색하여 반환
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits">
+      <li class="apple">Apple</li>
+      <li class="banana">Banana</li>
+      <li class="orange">Orange</li>
+    </ul>
+    <div class="banana">Banana</div>
+    <script>
+      // DOM 전체에서 class 값이 'banana'인 요소 노드를 모두 탐색하여 반환한다.
+      const $bananasFromDocument = document.getElementsByClassName("banana");
+      console.log($bananasFromDocument); // HTMLCollection(2) [li.banana, div.banana]
+
+      // #fruits 요소의 자손 노드 중에서 class 값이 'banana'인 요소 노드를 모두 탐색하여 반환한다.
+      const $fruits = document.getElementById("fruits");
+      const $bananasFromFruits = $fruits.getElementsByClassName("banana");
+
+      console.log($bananasFromFruits); // HTMLCollection [li.banana]
+    </script>
+  </body>
+</html>
+```
+
+만약 해당 클래스를 가지는 요소가 없을 경우 빈 HTMLCollection 객체를 반환한다.
+
+### 39.2.4 CSS 선택자를 이용한 요소 취득
+
+CSS 선택자는 스타일을 적용하고자 하는 HTML 요소를 특정할 때 사용하는 문법이다.
+
+```js
+/* 전체 선택자: 모든 요소를 선택 */
+* { ... }
+/* 태그 선택자: 모든 p 태그 요소를 모두 선택 */
+p { ... }
+/* id 선택자: id 값이 'foo'인 요소를 모두 선택 */
+#foo { ... }
+/* class 선택자: class 값이 'foo'인 요소를 모두 선택 */
+.foo { ... }
+/* 어트리뷰트 선택자: input 요소 중에 type 어트리뷰트 값이 'text'인 요소를 모두 선택 */
+input[type=text] { ... }
+/* 후손 선택자: div 요소의 후손 요소 중 p 요소를 모두 선택 */
+div p { ... }
+/* 자식 선택자: div 요소의 자식 요소 중 p 요소를 모두 선택 */
+div > p { ... }
+/* 인접 형제 선택자: p 요소의 형제 요소 중에 p 요소 바로 뒤에 위치하는 ul 요소를 선택 */
+p + ul { ... }
+/* 일반 형제 선택자: p 요소의 형제 요소 중에 p 요소 뒤에 위치하는 ul 요소를 모두 선택 */
+p ~ ul { ... }
+/* 가상 클래스 선택자: hover 상태인 a 요소를 모두 선택 */
+a:hover { ... }
+/* 가상 요소 선택자: p 요소의 콘텐츠의 앞에 위치하는 공간을 선택
+   일반적으로 content 프로퍼티와 함께 사용된다. */
+p::before { ... }
+```
+
+Document.prototype/Element.prototype.querySelector 는 인수로 전달한 CSS 선택자를 만족시키는 하나의 요소 노드를 탐색하여 반환한다.
+
+- CSS 선택자를 만족시키는 요소가 여러개면 첫번째 요소 노드만 반환한다.
+- CSS 선택자를 만족시키는 요소가 존재하지 않으면 null을 반환한다.
+- CSS 선택자가 문법에 맞지 않으면 DOMException 에러가 발생한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul>
+      <li class="apple">Apple</li>
+      <li class="banana">Banana</li>
+      <li class="orange">Orange</li>
+    </ul>
+    <script>
+      // class 어트리뷰트 값이 'banana'인 첫 번째 요소 노드를 탐색하여 반환한다.
+      const $elem = document.querySelector(".banana");
+
+      // 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
+      $elem.style.color = "red";
+    </script>
+  </body>
+</html>
+```
+
+Document.prototype/Element.prototype.querySelectorAll 메서드는 인수로 전달한 CSS 선택자를 만족하는 모든 요소 노드를 탐색하여 반환한다. 이 메서드는 여러 노드 객체를 가지는 DOM 컬렉션 객체인 NodeList 객체를 반환한다. NodeList 객체는 유사 배열 객체이면서 이터러블이다.
+
+- CSS 선택자를 만족시키는 요소가 없으면 빈 NodeList 객체를 반환
+- CSS 선택자가 문법에 맞지 않으면 DOMException 에러가 발생한다.
+
+모든 요소 노드를 취득하려면 querySelectorAll 메서드의 인수로 \* 를 전달한다.
+
+querySelector, querySelectorAll 메서드는 Document.prototype과 Element.prototype에 정의된 메서드가 있다.
+
+- Document.prototype - document를 통해 호출하며 DOM 전체에서 요소 노드를 탐색해 반환.
+- Element.prototype - 특정 요소 노드를 통해 호출, 해당 요소 노드의 자손 노드 중에서 요소 노드를 탐색하여 반환
+
+---
+
+일반적으로 querySelector, querySelectorAll 메서드는 getElementBy~, 메서드보다 다소 느린 것으로 알려져 있다. 하지만 **CSS 선택자 문법을 사용해 좀 더 구체적인 조건으로 요소 노드를 취득하고, 일관된 방식으로 요소 노드를 취득할 수 있는 장점**이 있다.
+따라서 id 속성이 있는 요소 노드를 취득하는 경우엔 getElementById 메서드를 사용하고, 그 외에는 querySelector, querySelectorAll 메서드를 사용하는 것을 권장한다.
+
+---
+
+### 39.2.5 특정 요소 노드를 취득할 수 있는지 확인ㄷ
+
+Element.prototype.matches 메서드는 CSS 선택자를 통해 특정 요소 노드를 취득할 수 있는지 확인한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits">
+      <li class="apple">Apple</li>
+      <li class="banana">Banana</li>
+      <li class="orange">Orange</li>
+    </ul>
+  </body>
+  <script>
+    const $apple = document.querySelector(".apple");
+
+    // $apple 노드는 '#fruits > li.apple'로 취득할 수 있다.
+    console.log($apple.matches("#fruits > li.apple")); // true
+
+    // $apple 노드는 '#fruits > li.banana'로 취득할 수 없다.
+    console.log($apple.matches("#fruits > li.banana")); // false
+  </script>
+</html>
+```
+
+이 메서드는 이벤트 위임을 사용할 때 매우 유용하다.
+
+### 39.2.6 HTMLCollection 과 NodeList
+
+HTMLCollection 과 NodeList 모두 여러개의 결과값을 반환하기 위한 DOM 컬렉션 객체이다. 모두 유사 배열 객체이면서 이터러블이기 때문에 **for..of 문으로 순회하거나 스프레드 문법을 사용해 간단히 배열로 변환할 수 있다.**
+
+HTMLCollection 객체는 노드 객체를 실시간으로 반영하는 살아있는 객체라는 것이다. 즉, 언제나 실시간 정보를 반영해 작동한다. NodeList의 경우, 상태 변화를 실시간으로 반영하지 않지만, 경우에 따라 실시간으로 반영할 때가 있다.
+
+---
+
+**HTMLCollection**
+
+HTMLCollection 객체는 노드 객체의 상태변화를 실시간으로 반영한다.
+
+```html
+<!DOCTYPE html>
+<head>
+  <style>
+    .red {
+      color: red;
+    }
+    .blue {
+      color: blue;
+    }
+  </style>
+</head>
+<html>
+  <body>
+    <ul id="fruits">
+      <li class="red">Apple</li>
+      <li class="red">Banana</li>
+      <li class="red">Orange</li>
+    </ul>
+    <script>
+      // class 값이 'red'인 요소 노드를 모두 탐색하여 HTMLCollection 객체에 담아 반환한다.
+      const $elems = document.getElementsByClassName("red");
+      // 이 시점에 HTMLCollection 객체에는 3개의 요소 노드가 담겨 있다.
+      console.log($elems); // HTMLCollection(3) [li.red, li.red, li.red]
+
+      // HTMLCollection 객체의 모든 요소의 class 값을 'blue'로 변경한다.
+      for (let i = 0; i < $elems.length; i++) {
+        $elems[i].className = "blue";
+      }
+
+      // HTMLCollection 객체의 요소가 3개에서 1개로 변경되었다.
+      console.log($elems); // HTMLCollection(1) [li.red]
+    </script>
+  </body>
+</html>
+```
+
+코드의 의도는 모든 li요소의 글자색을 파란색으로 바꾸는 것이다. 하지만 실제로는 두번째 요소는 여전히 빨간색을 유지한다. 이는 HTMLCollection이 실시간 정보를 반영하기 때문이다. 즉, 첫번째 반복에서 class를 blue로 바꿨기에, HTMLCollection의 길이는 줄어들고, 두번째 반복에서 마지막 요소의 class를 blue를 바꾸고 반복문이 종료된다.
+
+이러한 현상은 for문을 역방향으로 순회하거나, while문을 사용하는 방법으로 해결할 수 있다. 가장 간단한 해결책은 HTMLCollection객체를 사용하지 않는 것이다. 이를 배열로 변환하면 이러한 부작용들을 피하고, 배열의 고차함수들을 사용할 수 있다.
+
+```js
+// for 문을 역방향으로 순회
+for (let i = $elems.length - 1; i >= 0; i--) {
+  $elems[i].className = "blue";
+}
+
+// while 문으로 HTMLCollection에 요소가 남아 있지 않을 때까지 무한 반복
+let i = 0;
+while ($elems.length > i) {
+  $elems[i].className = "blue";
+}
+
+// 유사 배열 객체이면서 이터러블인 HTMLCollection을 배열로 변환하여 순회
+[...$elems].forEach(elem => (elem.className = "blue"));
+```
+
+**NodeList**
+
+HTMLCollection의 부작용을 해결하기 위해 querySelectorAll 메서드를 사용하는 방법도 있다. 이는 NodeList객체를 반환한다.
+
+```js
+// querySelectorAll은 DOM 컬렉션 객체인 NodeList를 반환한다.
+const $elems = document.querySelectorAll(".red");
+
+// NodeList 객체는 NodeList.prototype.forEach 메서드를 상속받아 사용할 수 있다.
+$elems.forEach(elem => (elem.className = "blue"));
+```
+
+NodeList객체는 NodeList.prototype.forEach 메서드를 상속받아 사용할 수 있다. 이 외에도 item, entries, keys, values 메서드를 제공한다.
+
+NodeList 객체는 정적 상태를 유지하나, childNodes 프로퍼티가 반환하는 NodeList 객체는 live 객체로 작동하므로 주의한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits">
+      <li>Apple</li>
+      <li>Banana</li>
+    </ul>
+  </body>
+  <script>
+    const $fruits = document.getElementById("fruits");
+
+    // childNodes 프로퍼티는 NodeList 객체(live)를 반환한다.
+    const { childNodes } = $fruits;
+    console.log(childNodes instanceof NodeList); // true
+
+    // $fruits 요소의 자식 노드는 공백 텍스트 노드(39.3.1절 "공백 텍스트 노드" 참고)를 포함해 모두 5개다.
+    console.log(childNodes); // NodeList(5) [text, li, text, li, text]
+
+    for (let i = 0; i < childNodes.length; i++) {
+      // removeChild 메서드는 $fruits 요소의 자식 노드를 DOM에서 삭제한다.
+      // (39.6.9절 "노드 삭제" 참고)
+      // removeChild 메서드가 호출될 때마다 NodeList 객체인 childNodes가 실시간으로 변경된다.
+      // 따라서 첫 번째, 세 번째 다섯 번째 요소만 삭제된다.
+      $fruits.removeChild(childNodes[i]);
+    }
+
+    // 예상과 다르게 $fruits 요소의 모든 자식 노드가 삭제되지 않는다.
+    console.log(childNodes); // NodeList(2) [li, li]
+  </script>
+</html>
+```
+
+따라서 노드 객체의 상태 변경과 상관없이 안전하게 DOM 컬렉션을 사용하려면 HTMLCollection이나 NodeList 모두 배열로 변환하여 사용하는 것을 권장한다. 둘 모두 유사 배열 객체이며 이터러블이므로 스프레드 문법이나 Array.from 메서드를 사용해 간단히 배열로 변경할 수 있다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits">
+      <li>Apple</li>
+      <li>Banana</li>
+    </ul>
+  </body>
+  <script>
+    const $fruits = document.getElementById("fruits");
+
+    // childNodes 프로퍼티는 NodeList 객체(live)를 반환한다.
+    const { childNodes } = $fruits;
+
+    // 스프레드 문법을 사용하여 NodeList 객체를 배열로 변환한다.
+    [...childNodes].forEach(childNode => {
+      $fruits.removeChild(childNode);
+    });
+
+    // $fruits 요소의 모든 자식 노드가 모두 삭제되었다.
+    console.log(childNodes); // NodeList []
+  </script>
+</html>
+```
+
+## 39.3 노드 탐색
+
+요소 노드를 취득 후, 이를 기점으로 부모, 형제 자식 노드를 탐색해야 할 때가 있다.
+
+```html
+<ul id="fruits">
+  <li class="apple">Apple</li>
+  <li class="banana">Banana</li>
+  <li class="orange">Orange</li>
+</ul>
+```
+
+위에서는 ul#fruits 를 취득 후 자식 노드를 탐색할 수 있고, li#banana를 취득해 형제 노드 혹은 부모 노드를 탐색할 수 있다.
+
+이러한 탐색을 위해 Node, Element 인터페이스는 트리 탐색 프로퍼티를 제공한다.
+
+- Node.prototype : parentNode, previousSibling, firstChild, childNodes
+- Element.prototype : previousElementSibling, nextElementSibling, children
+
+노드 탐색 프로퍼티는 모두 읽기 전용 접근자 프로퍼티이다. 따라서 여기에 값을 할당하면 에러 없이 무시된다.
+
+### 39.3.1 공백 텍스트 노드
+
+HTML 요소 사이의 스페이스 ,탭, 개행 등의 공백 문자는 텍스트 노드를 생성한다. 이를 공백 텍스트 노드라고 한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits">
+      <li class="apple">Apple</li>
+      <li class="banana">Banana</li>
+      <li class="orange">Orange</li>
+    </ul>
+  </body>
+</html>
+```
+
+에디터에서 HTML 문서에 스페이스, 탭, 엔터를 입력하면 공백 문자가 추가된다. 이러한 공백 문자는 공백 텍스트 노드를 생성한다.
+
+### 39.3.2 자식 노드 탐색
+
+다음과 같은 탐색 프로퍼티를 사용한다.
+|프로퍼티|설명|
+|--|--|
+|Node.prototype.childNodes|자식 노드를 **모두** 탐색해 NodeList 에 담아 반환한다. 여기엔 **텍스트 노드가 포함될 수 있다.**|
+|Element.prototype.children| 자식 노드 중 **요소 노드만** 탐색해 HTMLCollection에 담아 반환한다. 여기엔 **텍스트 노드가 포함될 수 없다.**|
+||Node.prototype.firstChild|첫번쨰 자식 노드를 반환한다. **텍스트 노드이거나 요소 노드이다.**|
+||Node.prototype.lastChild|마지막 자식 노드를 반환한다. **텍스트 노드이거나 요소 노드이다.**|
+|Element.prototype.firstElementChild|첫번째 자식 노드를 반환한다. **요소 노드만 반환한다.**|
+|Element.prototype.lastElementChild|마지막 자식 노드를 반환한다. **요소 노드만 반환한다.**|
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits">
+      <li class="apple">Apple</li>
+      <li class="banana">Banana</li>
+      <li class="orange">Orange</li>
+    </ul>
+  </body>
+  <script>
+    // 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
+    const $fruits = document.getElementById("fruits");
+
+    // #fruits 요소의 모든 자식 노드를 탐색한다.
+    // childNodes 프로퍼티가 반환한 NodeList에는 요소 노드뿐만 아니라 텍스트 노드도 포함되어 있다.
+    console.log($fruits.childNodes);
+    // NodeList(7) [text, li.apple, text, li.banana, text, li.orange, text]
+
+    // #fruits 요소의 모든 자식 노드를 탐색한다.
+    // children 프로퍼티가 반환한 HTMLCollection에는 요소 노드만 포함되어 있다.
+    console.log($fruits.children);
+    // HTMLCollection(3) [li.apple, li.banana, li.orange]
+
+    // #fruits 요소의 첫 번째 자식 노드를 탐색한다.
+    // firstChild 프로퍼티는 텍스트 노드를 반환할 수도 있다.
+    console.log($fruits.firstChild); // #text
+
+    // #fruits 요소의 마지막 자식 노드를 탐색한다.
+    // lastChild 프로퍼티는 텍스트 노드를 반환할 수도 있다.
+    console.log($fruits.lastChild); // #text
+
+    // #fruits 요소의 첫 번째 자식 노드를 탐색한다.
+    // firstElementChild 프로퍼티는 요소 노드만 반환한다.
+    console.log($fruits.firstElementChild); // li.apple
+
+    // #fruits 요소의 마지막 자식 노드를 탐색한다.
+    // lastElementChild 프로퍼티는 요소 노드만 반환한다.
+    console.log($fruits.lastElementChild); // li.orange
+  </script>
+</html>
+```
+
+### 39.3.3 자식 노드 존재 확인
+
+이를 위해선 Node.prototype.hasChildNodes 메서드를 사용한다. 존재하면 true, 아니면 false를 반환한다. 마찬가지로 텍스트 노드를 포함해 확인한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits"></ul>
+  </body>
+  <script>
+    // 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
+    const $fruits = document.getElementById("fruits");
+
+    // #fruits 요소에 자식 노드가 존재하는지 확인한다.
+    // hasChildNodes 메서드는 텍스트 노드를 포함하여 자식 노드의 존재를 확인한다.
+    console.log($fruits.hasChildNodes()); // true
+  </script>
+</html>
+```
+
+자식 중 텍스트 노드가 아닌 요소 노드가 있는지 확인하려면 children.length 또는 Element의 childElementCount 프로퍼티를 사용한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits"></ul>
+  </body>
+  <script>
+    // 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
+    const $fruits = document.getElementById("fruits");
+
+    // hasChildNodes 메서드는 텍스트 노드를 포함하여 자식 노드의 존재를 확인한다.
+    console.log($fruits.hasChildNodes()); // true
+
+    // 자식 노드 중에 텍스트 노드가 아닌 요소 노드가 존재하는지는 확인한다.
+    console.log(!!$fruits.children.length); // 0 -> false
+    // 자식 노드 중에 텍스트 노드가 아닌 요소 노드가 존재하는지는 확인한다.
+    console.log(!!$fruits.childElementCount); // 0 -> false
+  </script>
+</html>
+```
+
+### 39.3.4 요소 노드의 텍스트 노드 탐색
+
+요소 노드의 텍스트 노드는 요소 노드의 자식 노드다. 이는 firstChild 프로퍼티로 접근할 수 있다. 이 프로퍼티가 반환한 노드는 텍스트 노드이거나 요소 노드이다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="foo">Hello</div>
+    <script>
+      // 요소 노드의 텍스트 노드는 firstChild 프로퍼티로 접근할 수 있다.
+      console.log(document.getElementById("foo").firstChild); // #text
+    </script>
+  </body>
+</html>
+```
+
+### 39.3.5 부모 노드 탐색
+
+부모 노드를 탐색하려면 Node.prototype.parentNode 프로퍼티를 사용한다. 부모 노드가 텍스트 노드인 경우는 없다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits">
+      <li class="apple">Apple</li>
+      <li class="banana">Banana</li>
+      <li class="orange">Orange</li>
+    </ul>
+  </body>
+  <script>
+    // 노드 탐색의 기점이 되는 .banana 요소 노드를 취득한다.
+    const $banana = document.querySelector(".banana");
+
+    // .banana 요소 노드의 부모 노드를 탐색한다.
+    console.log($banana.parentNode); // ul#fruits
+  </script>
+</html>
+```
+
+### 39.3.6 형제 노드 탐색
+
+다음과 같은 탐색 프로퍼티를 사용한다. 단, 어트리뷰트 노드는 형제 노드가 아니므로 반환되지 않는다. 즉, 텍스트 혹은 요소 노드만 반환한다.
+|프로퍼티|설명|
+|--|--|
+|Node.prototype.previousSibling|자신의 이전 형제 노드를 탐색하여 반환한다. **요소 노드거나, 텍스트 노드이다.**|
+|Node.prototype.nextSibling|자신의 다음 형제 노드를 탐색해 반환한다. **요소 노드거나, 텍스트 노드이다.**|
+|Element.prototype.previousElementSibling|이전 형제 요소노드를 탐색하여 반환한다. **오로지 요소 노드를 반환한다.**|
+|Element.prototype.nextElementSibling|다음 형제 요소 노드를 탐색해 반환한다. **오로지 요소 노드를 반환한다.**|
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul id="fruits">
+      <li class="apple">Apple</li>
+      <li class="banana">Banana</li>
+      <li class="orange">Orange</li>
+    </ul>
+  </body>
+  <script>
+    // 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
+    const $fruits = document.getElementById("fruits");
+
+    // #fruits 요소의 첫 번째 자식 노드를 탐색한다.
+    // firstChild 프로퍼티는 요소 노드뿐만 아니라 텍스트 노드를 반환할 수도 있다.
+    const { firstChild } = $fruits;
+    console.log(firstChild); // #text
+
+    // #fruits 요소의 첫 번째 자식 노드(텍스트 노드)의 다음 형제 노드를 탐색한다.
+    // nextSibling 프로퍼티는 요소 노드뿐만 아니라 텍스트 노드를 반환할 수도 있다.
+    const { nextSibling } = firstChild;
+    console.log(nextSibling); // li.apple
+
+    // li.apple 요소의 이전 형제 노드를 탐색한다.
+    // previousSibling 프로퍼티는 요소 노드뿐만 아니라 텍스트 노드를 반환할 수도 있다.
+    const { previousSibling } = nextSibling;
+    console.log(previousSibling); // #text
+
+    // #fruits 요소의 첫 번째 자식 요소 노드를 탐색한다.
+    // firstElementChild 프로퍼티는 요소 노드만 반환한다.
+    const { firstElementChild } = $fruits;
+    console.log(firstElementChild); // li.apple
+
+    // #fruits 요소의 첫 번째 자식 요소 노드(li.apple)의 다음 형제 노드를 탐색한다.
+    // nextElementSibling 프로퍼티는 요소 노드만 반환한다.
+    const { nextElementSibling } = firstElementChild;
+    console.log(nextElementSibling); // li.banana
+
+    // li.banana 요소의 이전 형제 요소 노드를 탐색한다.
+    // previousElementSibling 프로퍼티는 요소 노드만 반환한다.
+    const { previousElementSibling } = nextElementSibling;
+    console.log(previousElementSibling); // li.apple
+  </script>
+</html>
+```
+
+## 39.4 노드 정보 취득
+
+다음과 같은 노드 정보 프로퍼티를 사용한다.
+|프로퍼티|설명|
+|--|--|
+|Node.prototype.nodeType|노드 타입을 나타내는 상수를 반환한다. 요소 노드는 1, 텍스트 노드는 3, 문서 노드는 9를 반환한다.|
+|Node.prototype.nodeName|요소 노드: 태그 이름("LI" 등)을 반환. 텍스트 노드 "#text" 문자열을 반환. 문서 노드 "#document" 문자열을 반환.|
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="foo">Hello</div>
+  </body>
+  <script>
+    // 문서 노드의 노드 정보를 취득한다.
+    console.log(document.nodeType); // 9
+    console.log(document.nodeName); // #document
+
+    // 요소 노드의 노드 정보를 취득한다.
+    const $foo = document.getElementById("foo");
+    console.log($foo.nodeType); // 1
+    console.log($foo.nodeName); // DIV
+
+    // 텍스트 노드의 노드 정보를 취득한다.
+    const $textNode = $foo.firstChild;
+    console.log($textNode.nodeType); // 3
+    console.log($textNode.nodeName); // #text
+  </script>
+</html>
+```
+
+## 39.5 요소 노드의 텍스트 조작
+
+### 39.5.1 nodeValue
+
+nodeValue 프로퍼티는 참조와 할당 둘 다 가능하다. 노드 객체의 nodeValue 프로퍼티를 참조하면 노드 객체의 값을 반환한다. 이는 즉 텍스트 노드의 텍스트이다. 따라서 문서 혹은 요소 노드의 nodeValue 프로퍼티를 참조하면 null을 반환한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="foo">Hello</div>
+  </body>
+  <script>
+    // 문서 노드의 nodeValue 프로퍼티를 참조한다.
+    console.log(document.nodeValue); // null
+
+    // 요소 노드의 nodeValue 프로퍼티를 참조한다.
+    const $foo = document.getElementById("foo");
+    console.log($foo.nodeValue); // null
+
+    // 텍스트 노드의 nodeValue 프로퍼티를 참조한다.
+    const $textNode = $foo.firstChild;
+    console.log($textNode.nodeValue); // Hello
+  </script>
+</html>
+```
+
+따라서 요소 노드의 텍스트를 변경하려면 다음과 같은 순서 처리가 필요하다.
+
+1. 텍스트를 변경할 요소 노드를 취득해 해당 요소 노드의 텍스트 노드를 탐색한다.
+2. 탐색한 텍스트 노드의 nodeValue 프로퍼티를 사용해 값을 변경한다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="foo">Hello</div>
+  </body>
+  <script>
+    // 1. #foo 요소 노드의 자식 노드인 텍스트 노드를 취득한다.
+    const $textNode = document.getElementById("foo").firstChild;
+
+    // 2. nodeValue 프로퍼티를 사용하여 텍스트 노드의 값을 변경한다.
+    $textNode.nodeValue = "World";
+
+    console.log($textNode.nodeValue); // World
+  </script>
+</html>
+```
+
+### 39.5.2 textContent
+
+이는 setter와 getter 모두 존재하는 접근자 프로퍼티로, 요소 노다의 텍스트와 모든 자손 노드의 텍스트를 모두 취득하거나 변경한다.
+이 프로퍼티를 참조하면 요소 노드의 콘텐츠 영역(시작 태그와 종료 태그 사이) 내의 텍스트를 모두 반환한다. 다시 말해, 요소 노드의 childNodes 프로퍼티가 반환한 모든 노드들의 텍스트 노드의 값을 모두 반환한다. 이떄, HTML마크업은 무시된다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="foo">Hello <span>world!</span></div>
+  </body>
+  <script>
+    // #foo 요소 노드의 텍스트를 모두 취득한다. 이때 HTML 마크업은 무시된다.
+    console.log(document.getElementById("foo").textContent); // Hello world!
+  </script>
+</html>
+```
+
+nodeValue를 사용하면 textContent를 사용할 떄와 비교해 더 복잡하다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="foo">Hello <span>world!</span></div>
+  </body>
+  <script>
+    // #foo 요소 노드는 텍스트 노드가 아니다.
+    console.log(document.getElementById("foo").nodeValue); // null
+    // #foo 요소 노드의 자식 노드인 텍스트 노드의 값을 취득한다.
+    console.log(document.getElementById("foo").firstChild.nodeValue); // Hello
+    // span 요소 노드의 자식 노드인 텍스트 노드의 값을 취득한다.
+    console.log(document.getElementById("foo").lastChild.firstChild.nodeValue); // world!
+  </script>
+</html>
+```
+
+만약 콘텐츠 영역에 자식 요소 노드가 없고 텍스트만 존재하면 firstChild.nodeValue와 textContent는 같은 결과를 반환한다. 이때 textContent를 사용하면 더 간결하게 코드를 작성할 수 있다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <!-- 요소 노드의 콘텐츠 영역에 다른 요소 노드가 없고 텍스트만 존재 -->
+    <div id="foo">Hello</div>
+  </body>
+  <script>
+    const $foo = document.getElementById("foo");
+
+    // 요소 노드의 콘텐츠 영역에 자식 요소 노드가 없고 텍스트만 존재한다면
+    // firstChild.nodeValue와 textContent는 같은 결과를 반환한다.
+    console.log($foo.textContent === $foo.firstChild.nodeValue); // true
+  </script>
+</html>
+```
+
+요소 노드의 textContent 프로퍼티에 문자열을 할당하면 요소 노드의 모든 자식 노드가 제거되고 할당한 문자열이 텍스트로 추가된다. 이때 문자열에 HTML 마크업이 포함되어 있더라도 문자열 그대로 인식되어 텍스트로 취급된다. 즉, HTML 마크업이 파싱되지 않는다.
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="foo">Hello <span>world!</span></div>
+  </body>
+  <script>
+    // #foo 요소 노드의 모든 자식 노드가 제거되고 할당한 문자열이 텍스트로 추가된다.
+    // 이때 HTML 마크업이 파싱되지 않는다.
+    document.getElementById("foo").textContent = "Hi <span>there!</span>";
+  </script>
+</html>
+```
+
+같은 동작을 하는 innerText 프로퍼티가 있다. 이는 다음과 같은 이유로 사용하지 않는 것이 좋다.
+
+- CSS에 순종적이다. CSS에 의해 비표시되고 있다면 해당 요소의 텍스트를 반환하지 않는다.
+- CSS를 고려해야 하므로 textContent 프로퍼티보다 느리다.
