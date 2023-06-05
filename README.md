@@ -10773,3 +10773,214 @@ HTML요소의 어트리뷰트 중 이벤트에 대응하는 이벤트 핸들러�
 <!-- 이벤트 핸들러에 인수를 전달하기 곤란하다. -->
 <button onclick="sayHi">Click me!</button>
 ```
+
+# 41장 타이머
+
+## 41.1 호출 스케줄링
+
+- 함수를 일정 시간의 경과 후 실행시키려면 타이머 함수를 사용. => aka "호출 스케줄링"
+
+- JS에서는 `setTimeout` 과 `setInterval` 을 제공하는데, 이 함수들은 호스트 객체임
+
+- `setTimeout` 과 `setInterval`이 생성한 타이머가 만료되면 콜백 함수가 호출됨
+
+- `setTimeout`: 타이머가 단 한번 작동함
+- `setInterval`: 타이머가 반복 작동함
+
+JS는 싱글 스레드로 동작하기 때문에, `setTimeout` 과 `setInterval`는 비동기로 동작함
+
+## 41.2 타이머 함수
+
+### 41.2.1 `setTimeout` / `claerTimeout`
+
+`setTimeout`는 두 번째 인수로 전달받은 시간으로 단 한번 작동하는 타이머를 생성함. 이후 첫 번째 인자로 전달받은 콜백 함수가 호출됨.
+
+```js
+// 1초(1000ms) 후 타이머가 만료되면 콜백 함수가 호출된다.
+setTimeout(() => console.log("Hi!"), 1000);
+
+// 1초(1000ms) 후 타이머가 만료되면 콜백 함수가 호출된다.
+// 이때 콜백 함수에 'Lee'가 인수로 전달된다.
+setTimeout(name => console.log(`Hi! ${name}.`), 1000, "Lee");
+
+// 두 번째 인수(delay)를 생략하면 기본값 0이 지정된다.
+setTimeout(() => console.log("Hello!"));
+```
+
+- `setTimeout` 은 타이머를 식별할 고유한 타이머 id를 반환함. 브라우저에서는 숫자이며 Node.js에서는 객체임. 이를 `clearTimeout` 의 인자로 전달해 타이머를 취소 가능함
+
+```js
+// 1초(1000ms) 후 타이머가 만료되면 콜백 함수가 호출된다.
+// setTimeout 함수는 생성된 타이머를 식별할 수 있는 고유한 타이머 id를 반환한다.
+const timerId = setTimeout(() => console.log("Hi!"), 1000);
+
+// setTimeout 함수가 반환한 타이머 id를 clearTimeout 함수의 인수로 전달하여 타이머를
+// 취소한다. 타이머가 취소되면 setTimeout 함수의 콜백 함수가 실행되지 않는다.
+clearTimeout(timerId);
+```
+
+### 41.2.2 `setInterval` / `clearInterval`
+
+- 두 번째로 전달받은 시간으로 반복 동작하는 타이머를 생성
+
+- `setInterval` 은 타이머를 식별할 고유한 타이머 id를 반환함. 브라우저에서는 숫자이며 Node.js에서는 객체임. 이를 `clearInterval` 의 인자로 전달해 타이머를 취소 가능함
+
+```js
+let count = 1;
+
+// 1초(1000ms) 후 타이머가 만료될 때마다 콜백 함수가 호출된다.
+// setInterval 함수는 생성된 타이머를 식별할 수 있는 고유한 타이머 id를 반환한다.
+const timeoutId = setInterval(() => {
+	console.log(count); // 1 2 3 4 5
+	// count가 5이면 setInterval 함수가 반환한 타이머 id를 clearInterval 함수의
+	// 인수로 전달하여 타이머를 취소한다. 타이머가 취소되면 setInterval 함수의 콜백 함수가
+	// 실행되지 않는다.
+	if (count++ === 5) clearInterval(timeoutId);
+}, 1000);
+```
+
+## 41.3 디바운스와 스로틀
+
+> 연속해서 발생하는 이벤트를 그룹화해서 과도한 이벤트 핸들러의 호출을 방지하는 프로그래밍 기법
+
+### 41.3.1 디바운스
+
+> 짧은 시간 간격으로 이벤트가 연속해서 발생하면 이를 실행하지 않다가, 일정 시간이 경과한 이후에 딱 한번만 호출되도록 한다.
+
+```html
+<!DOCTYPE html>
+<html>
+	<body>
+		<button>click me</button>
+		<pre>일반 클릭 이벤트 카운터    <span class="normal-msg">0</span></pre>
+		<pre>디바운스 클릭 이벤트 카운터 <span class="debounce-msg">0</span></pre>
+		<pre>스로틀 클릭 이벤트 카운터   <span class="throttle-msg">0</span></pre>
+		<script>
+			const $button = document.querySelector("button");
+			const $normalMsg = document.querySelector(".normal-msg");
+			const $debounceMsg = document.querySelector(".debounce-msg");
+			const $throttleMsg = document.querySelector(".throttle-msg");
+
+			const debounce = (callback, delay) => {
+				let timerId;
+				return (...args) => {
+					if (timerId) clearTimeout(timerId);
+					timerId = setTimeout(callback, delay, ...args);
+				};
+			};
+
+			const throttle = (callback, delay) => {
+				let timerId;
+				return (...args) => {
+					if (timerId) return;
+					timerId = setTimeout(() => {
+						callback(...args);
+						timerId = null;
+					}, delay);
+				};
+			};
+
+			$button.addEventListener("click", () => {
+				$normalMsg.textContent = +$normalMsg.textContent + 1;
+			});
+
+			$button.addEventListener(
+				"click",
+				debounce(() => {
+					$debounceMsg.textContent = +$debounceMsg.textContent + 1;
+				}, 500)
+			);
+
+			$button.addEventListener(
+				"click",
+				throttle(() => {
+					$throttleMsg.textContent = +$throttleMsg.textContent + 1;
+				}, 500)
+			);
+		</script>
+	</body>
+</html>
+```
+
+- input에 사용자의 입력시마다 ajax요청이 가면 무리가 감. 따라서 입력이 완료되었을 때 단 한번만 요청이 가는 것이 바람직함.
+
+- 여기서 언제 사용자가 입력을 종료했는지 알 수 없으므로, 사용자가 일정 시간 동안 입력 필드에 값을 입력하지 않으면 입력이 완료된 것으로 간주함
+
+- 디바운스 이벤트는 resize 이번트 처리나 input요소에 입력값으로 ajax요청하는 자동완성 UI 구현, 버튼 중복 클릭 방지 처리등에 유용하게 사용된다.
+
+### 41.3.2 스로틀
+
+> 짧은 시간 간격으로 이벤트가 연속해서 발생해도 일정 시간 간격으로 이벤트가 최대 한번만 호출되도록 한다. 즉, 호출 주기를 만든다.
+
+```html
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			.container {
+				width: 300px;
+				height: 300px;
+				background-color: rebeccapurple;
+				overflow: scroll;
+			}
+
+			.content {
+				width: 300px;
+				height: 1000vh;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="content"></div>
+		</div>
+		<div>
+			일반 이벤트 핸들러가 scroll 이벤트를 처리한 횟수:
+			<span class="normal-count">0</span>
+		</div>
+		<div>
+			스로틀 이벤트 핸들러가 scroll 이벤트를 처리한 횟수:
+			<span class="throttle-count">0</span>
+		</div>
+
+		<script>
+			const $container = document.querySelector(".container");
+			const $normalCount = document.querySelector(".normal-count");
+			const $throttleCount = document.querySelector(".throttle-count");
+
+			const throttle = (callback, delay) => {
+				let timerId;
+				// throttle 함수는 timerId를 기억하는 클로저를 반환한다.
+				return (...args) => {
+					// delay가 경과하기 이전에 이벤트가 발생하면 아무것도 하지 않다가
+					// delay가 경과했을 때 이벤트가 발생하면 새로운 타이머를 재설정한다.
+					// 따라서 delay 간격으로 callback이 호출된다.
+					if (timerId) return;
+					timerId = setTimeout(() => {
+						callback(...args);
+						timerId = null;
+					}, delay);
+				};
+			};
+
+			let normalCount = 0;
+			$container.addEventListener("scroll", () => {
+				$normalCount.textContent = ++normalCount;
+			});
+
+			let throttleCount = 0;
+			// throttle 함수가 반환하는 클로저가 이벤트 핸들러로 등록된다.
+			$container.addEventListener(
+				"scroll",
+				throttle(() => {
+					$throttleCount.textContent = ++throttleCount;
+				}, 100)
+			);
+		</script>
+	</body>
+</html>
+```
+
+throttle 함수가 반환한 함수는 두 번째 인자로 전달한 시간(delay)가 지나기 이전에 이벤트가 발생하면 아무것도 하지 않다가 그 시간이 경과하고 이벤트가 발생하면 콜백 함수를 호출하고 새로운 타이밍을 재설정한다. 따라서 delay 시간 간격으로 콜백 함수가 호출된다.
+
+- scroll 이벤트 처리 혹은 무한 스크롤 UI 구현에 유용하게 사용된다.
