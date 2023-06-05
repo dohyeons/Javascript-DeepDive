@@ -7134,8 +7134,8 @@ Number(false); // -> 0
 
 ```js
 function isEqual(a, b) {
-  // a와 b를 뺀 값의 절대값이 Number.EPSILON보다 작으면 같은 수로 인정한다.
-  return Math.abs(a - b) < Number.EPSILON;
+	// a와 b를 뺀 값의 절대값이 Number.EPSILON보다 작으면 같은 수로 인정한다.
+	return Math.abs(a - b) < Number.EPSILON;
 }
 
 isEqual(0.1 + 0.2, 0.3); // -> true
@@ -7915,42 +7915,42 @@ today.toLocaleTimeString("ja-JP"); // -> 12:30:00
 
 ```js
 (function printNow() {
-  const today = new Date();
+	const today = new Date();
 
-  const dayNames = [
-    "(일요일)",
-    "(월요일)",
-    "(화요일)",
-    "(수요일)",
-    "(목요일)",
-    "(금요일)",
-    "(토요일)",
-  ];
-  // getDay 메서드는 해당 요일(0 ~ 6)을 나타내는 정수를 반환한다.
-  const day = dayNames[today.getDay()];
+	const dayNames = [
+		"(일요일)",
+		"(월요일)",
+		"(화요일)",
+		"(수요일)",
+		"(목요일)",
+		"(금요일)",
+		"(토요일)",
+	];
+	// getDay 메서드는 해당 요일(0 ~ 6)을 나타내는 정수를 반환한다.
+	const day = dayNames[today.getDay()];
 
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1;
-  const date = today.getDate();
-  let hour = today.getHours();
-  let minute = today.getMinutes();
-  let second = today.getSeconds();
-  const ampm = hour >= 12 ? "PM" : "AM";
+	const year = today.getFullYear();
+	const month = today.getMonth() + 1;
+	const date = today.getDate();
+	let hour = today.getHours();
+	let minute = today.getMinutes();
+	let second = today.getSeconds();
+	const ampm = hour >= 12 ? "PM" : "AM";
 
-  // 12시간제로 변경
-  hour %= 12;
-  hour = hour || 12; // hour가 0이면 12를 재할당
+	// 12시간제로 변경
+	hour %= 12;
+	hour = hour || 12; // hour가 0이면 12를 재할당
 
-  // 10미만인 분과 초를 2자리로 변경
-  minute = minute < 10 ? "0" + minute : minute;
-  second = second < 10 ? "0" + second : second;
+	// 10미만인 분과 초를 2자리로 변경
+	minute = minute < 10 ? "0" + minute : minute;
+	second = second < 10 ? "0" + second : second;
 
-  const now = `${year}년 ${month}월 ${date}일 ${day} ${hour}:${minute}:${second} ${ampm}`;
+	const now = `${year}년 ${month}월 ${date}일 ${day} ${hour}:${minute}:${second} ${ampm}`;
 
-  console.log(now);
+	console.log(now);
 
-  // 1초마다 printNow 함수를 재귀 호출한다. 41.2.1절 "setTimeout / clearTimeout" 참고
-  setTimeout(printNow, 1000);
+	// 1초마다 printNow 함수를 재귀 호출한다. 41.2.1절 "setTimeout / clearTimeout" 참고
+	setTimeout(printNow, 1000);
 })();
 ```
 
@@ -8394,7 +8394,7 @@ str.indexOf("l", 3); // -> 3
 
 ```js
 if (str.indexOf("Hello") !== -1) {
-  // 문자열 str에 'Hello'가 포함되어 있는 경우에 처리할 내용
+	// 문자열 str에 'Hello'가 포함되어 있는 경우에 처리할 내용
 }
 ```
 
@@ -8402,7 +8402,7 @@ if (str.indexOf("Hello") !== -1) {
 
 ```js
 if (str.includes("Hello")) {
-  // 문자열 str에 'Hello'가 포함되어 있는 경우에 처리할 내용
+	// 문자열 str에 'Hello'가 포함되어 있는 경우에 처리할 내용
 }
 ```
 
@@ -8489,7 +8489,7 @@ str.endsWith("lo", 5); // -> true
 const str = "Hello";
 
 for (let i = 0; i < str.length; i++) {
-  console.log(str.charAt(i)); // H e l l o
+	console.log(str.charAt(i)); // H e l l o
 }
 ```
 
@@ -8682,12 +8682,12 @@ str.replace(/hello/gi, "Lee"); // -> 'Lee Lee'
 ```js
 // 카멜 케이스를 스네이크 케이스로 변환하는 함수
 function camelToSnake(camelCase) {
-  // /.[A-Z]/g는 임의의 한 문자와 대문자로 이루어진 문자열에 매치한다.
-  // 치환 함수의 인수로 매치 결과가 전달되고, 치환 함수가 반환한 결과와 매치 결과를 치환한다.
-  return camelCase.replace(/.[A-Z]/g, match => {
-    console.log(match); // 'oW'
-    return match[0] + "_" + match[1].toLowerCase();
-  });
+	// /.[A-Z]/g는 임의의 한 문자와 대문자로 이루어진 문자열에 매치한다.
+	// 치환 함수의 인수로 매치 결과가 전달되고, 치환 함수가 반환한 결과와 매치 결과를 치환한다.
+	return camelCase.replace(/.[A-Z]/g, match => {
+		console.log(match); // 'oW'
+		return match[0] + "_" + match[1].toLowerCase();
+	});
 }
 
 const camelCase = "helloWorld";
@@ -8695,12 +8695,12 @@ camelToSnake(camelCase); // -> 'hello_world'
 
 // 스네이크 케이스를 카멜 케이스로 변환하는 함수
 function snakeToCamel(snakeCase) {
-  // /_[a-z]/g는 _와 소문자로 이루어진 문자열에 매치한다.
-  // 치환 함수의 인수로 매치 결과가 전달되고, 치환 함수가 반환한 결과와 매치 결과를 치환한다.
-  return snakeCase.replace(/_[a-z]]/g, match => {
-    console.log(match); // '_w'
-    return match[1].toUpperCase();
-  });
+	// /_[a-z]/g는 _와 소문자로 이루어진 문자열에 매치한다.
+	// 치환 함수의 인수로 매치 결과가 전달되고, 치환 함수가 반환한 결과와 매치 결과를 치환한다.
+	return snakeCase.replace(/_[a-z]]/g, match => {
+		console.log(match); // '_w'
+		return match[1].toUpperCase();
+	});
 }
 
 const snakeCase = "hello_world";
@@ -8739,7 +8739,7 @@ str.split(" ", 3); // -> ["How", "are", "you"]
 ```js
 // 인수로 전달받은 문자열을 역순으로 뒤집는다.
 function reverseString(str) {
-  return str.split("").reverse().join("");
+	return str.split("").reverse().join("");
 }
 
 reverseString("Hello world!"); // -> '!dlrow olleH'
@@ -8784,7 +8784,7 @@ console.log(Symbol.iterator in array); // true
 
 // 이터러블인 배열은 for...of 문으로 순회 가능하다.
 for (const item of array) {
-  console.log(item); // 1 2 3
+	console.log(item); // 1 2 3
 }
 
 // 이터러블인 배열은 스프레드 문법의 대상으로 사용할 수 있다.
@@ -8806,8 +8806,8 @@ console.log(Symbol.iterator in obj); // false
 
 // 이터러블이 아닌 일반 객체는 for...of 문으로 순회할 수 없다.
 for (const item of obj) {
-  // -> TypeError: obj is not iterable
-  console.log(item);
+	// -> TypeError: obj is not iterable
+	console.log(item);
 }
 
 // 이터러블이 아닌 일반 객체는 배열 디스트럭처링 할당의 대상으로 사용할 수 없다.
@@ -8870,8 +8870,8 @@ JS에서는 이터레이션 프로토콜을 준수한 객체인 빌트인 이터
 
 ```js
 for (const item of [1, 2, 3]) {
-  // item 변수에 순차적으로 1, 2, 3이 할당된다.
-  console.log(item); // 1 2 3
+	// item 변수에 순차적으로 1, 2, 3이 할당된다.
+	console.log(item); // 1 2 3
 }
 ```
 
@@ -8885,15 +8885,15 @@ const iterable = [1, 2, 3];
 const iterator = iterable[Symbol.iterator]();
 
 for (;;) {
-  // 이터레이터의 next 메서드를 호출하여 이터러블을 순회한다. 이때 next 메서드는 이터레이터 리절트 객체를 반환한다.
-  const res = iterator.next();
+	// 이터레이터의 next 메서드를 호출하여 이터러블을 순회한다. 이때 next 메서드는 이터레이터 리절트 객체를 반환한다.
+	const res = iterator.next();
 
-  // next 메서드가 반환한 이터레이터 리절트 객체의 done 프로퍼티 값이 true이면 이터러블의 순회를 중단한다.
-  if (res.done) break;
+	// next 메서드가 반환한 이터레이터 리절트 객체의 done 프로퍼티 값이 true이면 이터러블의 순회를 중단한다.
+	if (res.done) break;
 
-  // 이터레이터 리절트 객체의 value 프로퍼티 값을 item 변수에 할당한다.
-  const item = res.value;
-  console.log(item); // 1 2 3
+	// 이터레이터 리절트 객체의 value 프로퍼티 값을 item 변수에 할당한다.
+	const item = res.value;
+	console.log(item); // 1 2 3
 }
 ```
 
@@ -8904,16 +8904,16 @@ for (;;) {
 ```js
 // 유사 배열 객체
 const arrayLike = {
-  0: 1,
-  1: 2,
-  2: 3,
-  length: 3,
+	0: 1,
+	1: 2,
+	2: 3,
+	length: 3,
 };
 
 // 유사 배열 객체는 length 프로퍼티를 갖기 때문에 for 문으로 순회할 수 있다.
 for (let i = 0; i < arrayLike.length; i++) {
-  // 유사 배열 객체는 마치 배열처럼 인덱스로 프로퍼티 값에 접근할 수 있다.
-  console.log(arrayLike[i]); // 1 2 3
+	// 유사 배열 객체는 마치 배열처럼 인덱스로 프로퍼티 값에 접근할 수 있다.
+	console.log(arrayLike[i]); // 1 2 3
 }
 ```
 
@@ -8922,7 +8922,7 @@ for (let i = 0; i < arrayLike.length; i++) {
 ```js
 // 유사 배열 객체는 이터러블이 아니기 때문에 for...of 문으로 순회할 수 없다.
 for (const item of arrayLike) {
-  console.log(item); // 1 2 3
+	console.log(item); // 1 2 3
 }
 // -> TypeError: arrayLike is not iterable
 ```
@@ -8932,10 +8932,10 @@ arguments, NodeList, HTMLCollection 등은 유사 배열 객체이면서 이터�
 ```js
 // 유사 배열 객체
 const arrayLike = {
-  0: 1,
-  1: 2,
-  2: 3,
-  length: 3,
+	0: 1,
+	1: 2,
+	2: 3,
+	length: 3,
 };
 
 // Array.from은 유사 배열 객체 또는 이터러블을 배열로 변환한다
@@ -8958,26 +8958,26 @@ console.log(arr); // [1, 2, 3]
 ```js
 // 피보나치 수열을 구현한 사용자 정의 이터러블
 const fibonacci = {
-  // Symbol.iterator 메서드를 구현하여 이터러블 프로토콜을 준수한다.
-  [Symbol.iterator]() {
-    let [pre, cur] = [0, 1]; // "36.1. 배열 디스트럭처링 할당" 참고
-    const max = 10; // 수열의 최대값
+	// Symbol.iterator 메서드를 구현하여 이터러블 프로토콜을 준수한다.
+	[Symbol.iterator]() {
+		let [pre, cur] = [0, 1]; // "36.1. 배열 디스트럭처링 할당" 참고
+		const max = 10; // 수열의 최대값
 
-    // Symbol.iterator 메서드는 next 메서드를 소유한 이터레이터를 반환해야 하고
-    // next 메서드는 이터레이터 리절트 객체를 반환해야 한다.
-    return {
-      next() {
-        [pre, cur] = [cur, pre + cur]; // "36.1. 배열 디스트럭처링 할당" 참고
-        // 이터레이터 리절트 객체를 반환한다.
-        return { value: cur, done: cur >= max };
-      },
-    };
-  },
+		// Symbol.iterator 메서드는 next 메서드를 소유한 이터레이터를 반환해야 하고
+		// next 메서드는 이터레이터 리절트 객체를 반환해야 한다.
+		return {
+			next() {
+				[pre, cur] = [cur, pre + cur]; // "36.1. 배열 디스트럭처링 할당" 참고
+				// 이터레이터 리절트 객체를 반환한다.
+				return { value: cur, done: cur >= max };
+			},
+		};
+	},
 };
 
 // 이터러블인 fibonacci 객체를 순회할 때마다 next 메서드가 호출된다.
 for (const num of fibonacci) {
-  console.log(num); // 1 2 3 5 8
+	console.log(num); // 1 2 3 5 8
 }
 ```
 
@@ -9002,24 +9002,24 @@ console.log(first, second, rest); // 1 2 [ 3, 5, 8 ]
 ```js
 // 피보나치 수열을 구현한 사용자 정의 이터러블을 반환하는 함수. 수열의 최대값을 인수로 전달받는다.
 const fibonacciFunc = function (max) {
-  let [pre, cur] = [0, 1];
+	let [pre, cur] = [0, 1];
 
-  // Symbol.iterator 메서드를 구현한 이터러블을 반환한다.
-  return {
-    [Symbol.iterator]() {
-      return {
-        next() {
-          [pre, cur] = [cur, pre + cur];
-          return { value: cur, done: cur >= max };
-        },
-      };
-    },
-  };
+	// Symbol.iterator 메서드를 구현한 이터러블을 반환한다.
+	return {
+		[Symbol.iterator]() {
+			return {
+				next() {
+					[pre, cur] = [cur, pre + cur];
+					return { value: cur, done: cur >= max };
+				},
+			};
+		},
+	};
 };
 
 // 이터러블을 반환하는 함수에 수열의 최대값을 인수로 전달하면서 호출한다.
 for (const num of fibonacciFunc(10)) {
-  console.log(num); // 1 2 3 5 8
+	console.log(num); // 1 2 3 5 8
 }
 ```
 
@@ -9057,19 +9057,19 @@ console.log(iterator.next()); // { value: 5, done: true }
 ```js
 // 이터러블이면서 이터레이터인 객체를 반환하는 함수
 const fibonacciFunc = function (max) {
-  let [pre, cur] = [0, 1];
+	let [pre, cur] = [0, 1];
 
-  // Symbol.iterator 메서드와 next 메서드를 소유한 이터러블이면서 이터레이터인 객체를 반환
-  return {
-    [Symbol.iterator]() {
-      return this;
-    },
-    // next 메서드는 이터레이터 리절트 객체를 반환
-    next() {
-      [pre, cur] = [cur, pre + cur];
-      return { value: cur, done: cur >= max };
-    },
-  };
+	// Symbol.iterator 메서드와 next 메서드를 소유한 이터러블이면서 이터레이터인 객체를 반환
+	return {
+		[Symbol.iterator]() {
+			return this;
+		},
+		// next 메서드는 이터레이터 리절트 객체를 반환
+		next() {
+			[pre, cur] = [cur, pre + cur];
+			return { value: cur, done: cur >= max };
+		},
+	};
 };
 
 // iter는 이터러블이면서 이터레이터다.
@@ -9077,7 +9077,7 @@ let iter = fibonacciFunc(10);
 
 // iter는 이터러블이므로 for...of 문으로 순회할 수 있다.
 for (const num of iter) {
-  console.log(num); // 1 2 3 5 8
+	console.log(num); // 1 2 3 5 8
 }
 
 // iter는 이터러블이면서 이터레이터다
@@ -9099,24 +9099,24 @@ console.log(iter.next()); // { value: 13, done: true }
 ```js
 // 무한 이터러블을 생성하는 함수
 const fibonacciFunc = function () {
-  let [pre, cur] = [0, 1];
+	let [pre, cur] = [0, 1];
 
-  return {
-    [Symbol.iterator]() {
-      return this;
-    },
-    next() {
-      [pre, cur] = [cur, pre + cur];
-      // 무한을 구현해야 하므로 done 프로퍼티를 생략한다.
-      return { value: cur };
-    },
-  };
+	return {
+		[Symbol.iterator]() {
+			return this;
+		},
+		next() {
+			[pre, cur] = [cur, pre + cur];
+			// 무한을 구현해야 하므로 done 프로퍼티를 생략한다.
+			return { value: cur };
+		},
+	};
 };
 
 // fibonacciFunc 함수는 무한 이터러블을 생성한다.
 for (const num of fibonacciFunc()) {
-  if (num > 10000) break;
-  console.log(num); // 1 2 3 5 8...4181 6765
+	if (num > 10000) break;
+	console.log(num); // 1 2 3 5 8...4181 6765
 }
 
 // 배열 디스트럭처링 할당을 통해 무한 이터러블에서 3개의 요소만 취득한다.
@@ -9143,10 +9143,10 @@ console.log(..."Hello"); // H e l l o
 
 // Map과 Set은 이터러블이다.
 console.log(
-  ...new Map([
-    ["a", "1"],
-    ["b", "2"],
-  ])
+	...new Map([
+		["a", "1"],
+		["b", "2"],
+	])
 ); // [ 'a', '1' ] [ 'b', '2' ]
 console.log(...new Set([1, 2, 3])); // 1 2 3
 
@@ -9209,7 +9209,7 @@ const max = Math.max(...arr); // -> 3
 ```js
 // Rest 파라미터는 인수들의 목록을 배열로 전달받는다.
 function foo(...rest) {
-  console.log(rest); // 1, 2, 3 -> [ 1, 2, 3 ]
+	console.log(rest); // 1, 2, 3 -> [ 1, 2, 3 ]
 }
 
 // 스프레드 문법은 배열과 같은 이터러블을 펼쳐서 개별적인 값들의 목록을 만든다.
@@ -9313,12 +9313,12 @@ ES5에서 이터러블을 배열로 전환하려면, `apply` 혹은 `call` 메�
 ```js
 // ES5
 function sum() {
-  // 이터러블이면서 유사 배열 객체인 arguments를 배열로 변환
-  var args = Array.prototype.slice.call(arguments);
+	// 이터러블이면서 유사 배열 객체인 arguments를 배열로 변환
+	var args = Array.prototype.slice.call(arguments);
 
-  return args.reduce(function (pre, cur) {
-    return pre + cur;
-  }, 0);
+	return args.reduce(function (pre, cur) {
+		return pre + cur;
+	}, 0);
 }
 
 console.log(sum(1, 2, 3)); // 6
@@ -9329,10 +9329,10 @@ console.log(sum(1, 2, 3)); // 6
 ```js
 // 이터러블이 아닌 유사 배열 객체
 const arrayLike = {
-  0: 1,
-  1: 2,
-  2: 3,
-  length: 3,
+	0: 1,
+	1: 2,
+	2: 3,
+	length: 3,
 };
 
 const arr = Array.prototype.slice.call(arrayLike); // -> [1, 2, 3]
@@ -9344,8 +9344,8 @@ console.log(Array.isArray(arr)); // true
 ```js
 // ES6
 function sum() {
-  // 이터러블이면서 유사 배열 객체인 arguments를 배열로 변환
-  return [...arguments].reduce((pre, cur) => pre + cur, 0);
+	// 이터러블이면서 유사 배열 객체인 arguments를 배열로 변환
+	return [...arguments].reduce((pre, cur) => pre + cur, 0);
 }
 
 console.log(sum(1, 2, 3)); // 6
@@ -9365,10 +9365,10 @@ console.log(sum(1, 2, 3)); // 6
 ```js
 // 이터러블이 아닌 유사 배열 객체
 const arrayLike = {
-  0: 1,
-  1: 2,
-  2: 3,
-  length: 3,
+	0: 1,
+	1: 2,
+	2: 3,
+	length: 3,
 };
 
 const arr = [...arrayLike];
@@ -9517,10 +9517,10 @@ console.log(e, f, g); // 1 2 3
 ```js
 // url을 파싱하여 protocol, host, path 프로퍼티를 갖는 객체를 생성해 반환한다.
 function parseURL(url = "") {
-  // '://' 앞의 문자열(protocol)과 '/' 이전의 '/'으로 시작하지 않는 문자열(host)과 '/' 이후의 문자열(path)을 검색한다.
-  const parsedURL = url.match(/^(\w+):\/\/([^/]+)\/(.*)$/);
-  console.log(parsedURL);
-  /*
+	// '://' 앞의 문자열(protocol)과 '/' 이전의 '/'으로 시작하지 않는 문자열(host)과 '/' 이후의 문자열(path)을 검색한다.
+	const parsedURL = url.match(/^(\w+):\/\/([^/]+)\/(.*)$/);
+	console.log(parsedURL);
+	/*
   [
     'https://developer.mozilla.org/ko/docs/Web/JavaScript',
     'https',
@@ -9532,15 +9532,15 @@ function parseURL(url = "") {
   ]
   */
 
-  if (!parsedURL) return {};
+	if (!parsedURL) return {};
 
-  // 배열 디스트럭처링 할당을 사용하여 이터러블에서 필요한 요소만 추출한다.
-  const [, protocol, host, path] = parsedURL;
-  return { protocol, host, path };
+	// 배열 디스트럭처링 할당을 사용하여 이터러블에서 필요한 요소만 추출한다.
+	const [, protocol, host, path] = parsedURL;
+	return { protocol, host, path };
 }
 
 const parsedURL = parseURL(
-  "https://developer.mozilla.org/ko/docs/Web/JavaScript"
+	"https://developer.mozilla.org/ko/docs/Web/JavaScript"
 );
 console.log(parsedURL);
 /*
@@ -9622,9 +9622,9 @@ console.log(id); // 1
 
 ```js
 function printTodo(todo) {
-  console.log(
-    `할일 ${todo.content}은 ${todo.completed ? "완료" : "비완료"} 상태입니다.`
-  );
+	console.log(
+		`할일 ${todo.content}은 ${todo.completed ? "완료" : "비완료"} 상태입니다.`
+	);
 }
 
 printTodo({ id: 1, content: "HTML", completed: true });
@@ -9632,7 +9632,7 @@ printTodo({ id: 1, content: "HTML", completed: true });
 
 // 객체 디스트럭처링 사용
 function printTodo({ content, completed }) {
-  console.log(`할일 ${content}은 ${completed ? "완료" : "비완료"} 상태입니다.`);
+	console.log(`할일 ${content}은 ${completed ? "완료" : "비완료"} 상태입니다.`);
 }
 
 printTodo({ id: 1, content: "HTML", completed: true });
@@ -9643,9 +9643,9 @@ printTodo({ id: 1, content: "HTML", completed: true });
 
 ```js
 const todos = [
-  { id: 1, content: "HTML", completed: true },
-  { id: 2, content: "CSS", completed: false },
-  { id: 3, content: "JS", completed: false },
+	{ id: 1, content: "HTML", completed: true },
+	{ id: 2, content: "CSS", completed: false },
+	{ id: 3, content: "JS", completed: false },
 ];
 
 // todos 배열의 두 번째 요소인 객체로부터 id 프로퍼티만 추출한다.
@@ -9657,16 +9657,16 @@ console.log(id); // 2
 
 ```js
 const user = {
-  name: "Lee",
-  address: {
-    zipCode: "03068",
-    city: "Seoul",
-  },
+	name: "Lee",
+	address: {
+		zipCode: "03068",
+		city: "Seoul",
+	},
 };
 
 // address 프로퍼티 키로 객체를 추출하고 이 객체의 city 프로퍼티 키로 값을 추출한다.
 const {
-  address: { city },
+	address: { city },
 } = user;
 console.log(city); // 'Seoul'
 ```
@@ -9715,18 +9715,18 @@ HTML요소는 중첩 관계에 따라서 부자관계를 가진다. 이러한 �
 ```html
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <ul>
-      <li id="apple">Apple</li>
-      <li id="banana">Banana</li>
-      <li id="orange">Orange</li>
-    </ul>
-    <script src="app.js"></script>
-  </body>
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<ul>
+			<li id="apple">Apple</li>
+			<li id="banana">Banana</li>
+			<li id="orange">Orange</li>
+		</ul>
+		<script src="app.js"></script>
+	</body>
 </html>
 ```
 
@@ -9777,24 +9777,24 @@ DOM을 구성하는 노드 객체는 호스트 객체이다. 하지만 노드 �
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <input type="text" />
-    <script>
-      // input 요소 노드 객체를 선택
-      const $input = document.querySelector("input");
+	<body>
+		<input type="text" />
+		<script>
+			// input 요소 노드 객체를 선택
+			const $input = document.querySelector("input");
 
-      // input 요소 노드 객체의 프로토타입 체인
-      console.log(
-        Object.getPrototypeOf($input) === HTMLInputElement.prototype,
-        Object.getPrototypeOf(HTMLInputElement.prototype) ===
-          HTMLElement.prototype,
-        Object.getPrototypeOf(HTMLElement.prototype) === Element.prototype,
-        Object.getPrototypeOf(Element.prototype) === Node.prototype,
-        Object.getPrototypeOf(Node.prototype) === EventTarget.prototype,
-        Object.getPrototypeOf(EventTarget.prototype) === Object.prototype
-      ); // 모두 true
-    </script>
-  </body>
+			// input 요소 노드 객체의 프로토타입 체인
+			console.log(
+				Object.getPrototypeOf($input) === HTMLInputElement.prototype,
+				Object.getPrototypeOf(HTMLInputElement.prototype) ===
+					HTMLElement.prototype,
+				Object.getPrototypeOf(HTMLElement.prototype) === Element.prototype,
+				Object.getPrototypeOf(Element.prototype) === Node.prototype,
+				Object.getPrototypeOf(Node.prototype) === EventTarget.prototype,
+				Object.getPrototypeOf(EventTarget.prototype) === Object.prototype
+			); // 모두 true
+		</script>
+	</body>
 </html>
 ```
 
@@ -9843,21 +9843,21 @@ Document.prototype.getElementById 메서드는 인수로 전달한 id 값을 갖
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul>
-      <li id="apple">Apple</li>
-      <li id="banana">Banana</li>
-      <li id="orange">Orange</li>
-    </ul>
-    <script>
-      // id 값이 'banana'인 요소 노드를 탐색하여 반환한다.
-      // 두 번째 li 요소가 파싱되어 생성된 요소 노드가 반환된다.
-      const $elem = document.getElementById("banana");
+	<body>
+		<ul>
+			<li id="apple">Apple</li>
+			<li id="banana">Banana</li>
+			<li id="orange">Orange</li>
+		</ul>
+		<script>
+			// id 값이 'banana'인 요소 노드를 탐색하여 반환한다.
+			// 두 번째 li 요소가 파싱되어 생성된 요소 노드가 반환된다.
+			const $elem = document.getElementById("banana");
 
-      // 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
-      $elem.style.color = "red";
-    </script>
-  </body>
+			// 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
+			$elem.style.color = "red";
+		</script>
+	</body>
 </html>
 ```
 
@@ -9866,21 +9866,21 @@ id값은 문서 내에서 유일한 값이어야 한다. HTML 문서 내에서 i
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul>
-      <li id="banana">Apple</li>
-      <li id="banana">Banana</li>
-      <li id="banana">Orange</li>
-    </ul>
-    <script>
-      // getElementById 메서드는 언제나 단 하나의 요소 노드를 반환한다.
-      // 첫 번째 li 요소가 파싱되어 생성된 요소 노드가 반환된다.
-      const $elem = document.getElementById("banana");
+	<body>
+		<ul>
+			<li id="banana">Apple</li>
+			<li id="banana">Banana</li>
+			<li id="banana">Orange</li>
+		</ul>
+		<script>
+			// getElementById 메서드는 언제나 단 하나의 요소 노드를 반환한다.
+			// 첫 번째 li 요소가 파싱되어 생성된 요소 노드가 반환된다.
+			const $elem = document.getElementById("banana");
 
-      // 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
-      $elem.style.color = "red";
-    </script>
-  </body>
+			// 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
+			$elem.style.color = "red";
+		</script>
+	</body>
 </html>
 ```
 
@@ -9889,21 +9889,21 @@ id값은 문서 내에서 유일한 값이어야 한다. HTML 문서 내에서 i
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul>
-      <li id="apple">Apple</li>
-      <li id="banana">Banana</li>
-      <li id="orange">Orange</li>
-    </ul>
-    <script>
-      // id 값이 'grape'인 요소 노드를 탐색하여 반환한다. null이 반환된다.
-      const $elem = document.getElementById("grape");
+	<body>
+		<ul>
+			<li id="apple">Apple</li>
+			<li id="banana">Banana</li>
+			<li id="orange">Orange</li>
+		</ul>
+		<script>
+			// id 값이 'grape'인 요소 노드를 탐색하여 반환한다. null이 반환된다.
+			const $elem = document.getElementById("grape");
 
-      // 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
-      $elem.style.color = "red";
-      // -> TypeError: Cannot read property 'style' of null
-    </script>
-  </body>
+			// 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
+			$elem.style.color = "red";
+			// -> TypeError: Cannot read property 'style' of null
+		</script>
+	</body>
 </html>
 ```
 
@@ -9912,17 +9912,17 @@ HTML요소에 id 속성을 부여하면, id값과 동일한 이름의 전역 변
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <div id="foo"></div>
-    <script>
-      // id 값과 동일한 이름의 전역 변수가 암묵적으로 선언되고 해당 노드 객체가 할당된다.
-      console.log(foo === document.getElementById("foo")); // true
+	<body>
+		<div id="foo"></div>
+		<script>
+			// id 값과 동일한 이름의 전역 변수가 암묵적으로 선언되고 해당 노드 객체가 할당된다.
+			console.log(foo === document.getElementById("foo")); // true
 
-      // 암묵적 전역으로 생성된 전역 프로퍼티는 삭제되지만 전역 변수는 삭제되지 않는다.
-      delete foo;
-      console.log(foo); // <div id="foo"></div>
-    </script>
-  </body>
+			// 암묵적 전역으로 생성된 전역 프로퍼티는 삭제되지만 전역 변수는 삭제되지 않는다.
+			delete foo;
+			console.log(foo); // <div id="foo"></div>
+		</script>
+	</body>
 </html>
 ```
 
@@ -9931,15 +9931,15 @@ HTML요소에 id 속성을 부여하면, id값과 동일한 이름의 전역 변
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <div id="foo"></div>
-    <script>
-      let foo = 1;
+	<body>
+		<div id="foo"></div>
+		<script>
+			let foo = 1;
 
-      // id 값과 동일한 이름의 전역 변수가 이미 선언되어 있으면 노드 객체가 재할당되지 않는다.
-      console.log(foo); // 1
-    </script>
-  </body>
+			// id 값과 동일한 이름의 전역 변수가 이미 선언되어 있으면 노드 객체가 재할당되지 않는다.
+			console.log(foo); // 1
+		</script>
+	</body>
 </html>
 ```
 
@@ -9950,25 +9950,25 @@ Document.prototype/Element.prototype.getElementsByTagName 메서드는 인수로
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul>
-      <li id="apple">Apple</li>
-      <li id="banana">Banana</li>
-      <li id="orange">Orange</li>
-    </ul>
-    <script>
-      // 태그 이름이 li인 요소 노드를 모두 탐색하여 반환한다.
-      // 탐색된 요소 노드들은 HTMLCollection 객체에 담겨 반환된다.
-      // HTMLCollection 객체는 유사 배열 객체이면서 이터러블이다.
-      const $elems = document.getElementsByTagName("li");
+	<body>
+		<ul>
+			<li id="apple">Apple</li>
+			<li id="banana">Banana</li>
+			<li id="orange">Orange</li>
+		</ul>
+		<script>
+			// 태그 이름이 li인 요소 노드를 모두 탐색하여 반환한다.
+			// 탐색된 요소 노드들은 HTMLCollection 객체에 담겨 반환된다.
+			// HTMLCollection 객체는 유사 배열 객체이면서 이터러블이다.
+			const $elems = document.getElementsByTagName("li");
 
-      // 취득한 모든 요소 노드의 style.color 프로퍼티 값을 변경한다.
-      // HTMLCollection 객체를 배열로 변환하여 순회하며 color 프로퍼티 값을 변경한다.
-      [...$elems].forEach(elem => {
-        elem.style.color = "red";
-      });
-    </script>
-  </body>
+			// 취득한 모든 요소 노드의 style.color 프로퍼티 값을 변경한다.
+			// HTMLCollection 객체를 배열로 변환하여 순회하며 color 프로퍼티 값을 변경한다.
+			[...$elems].forEach(elem => {
+				elem.style.color = "red";
+			});
+		</script>
+	</body>
 </html>
 ```
 
@@ -9990,27 +9990,27 @@ getElementsByTagName 메서드는 Document.prototype과 Element.prototype에 정
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits">
-      <li>Apple</li>
-      <li>Banana</li>
-      <li>Orange</li>
-    </ul>
-    <ul>
-      <li>HTML</li>
-    </ul>
-    <script>
-      // DOM 전체에서 태그 이름이 li인 요소 노드를 모두 탐색하여 반환한다.
-      const $lisFromDocument = document.getElementsByTagName("li");
-      console.log($lisFromDocument); // HTMLCollection(4) [li, li, li, li]
+	<body>
+		<ul id="fruits">
+			<li>Apple</li>
+			<li>Banana</li>
+			<li>Orange</li>
+		</ul>
+		<ul>
+			<li>HTML</li>
+		</ul>
+		<script>
+			// DOM 전체에서 태그 이름이 li인 요소 노드를 모두 탐색하여 반환한다.
+			const $lisFromDocument = document.getElementsByTagName("li");
+			console.log($lisFromDocument); // HTMLCollection(4) [li, li, li, li]
 
-      // #fruits 요소의 자손 노드 중에서 태그 이름이 li인 요소 노드를 모두
-      // 탐색하여 반환한다.
-      const $fruits = document.getElementById("fruits");
-      const $lisFromFruits = $fruits.getElementsByTagName("li");
-      console.log($lisFromFruits); // HTMLCollection(3) [li, li, li]
-    </script>
-  </body>
+			// #fruits 요소의 자손 노드 중에서 태그 이름이 li인 요소 노드를 모두
+			// 탐색하여 반환한다.
+			const $fruits = document.getElementById("fruits");
+			const $lisFromFruits = $fruits.getElementsByTagName("li");
+			console.log($lisFromFruits); // HTMLCollection(3) [li, li, li]
+		</script>
+	</body>
 </html>
 ```
 
@@ -10023,30 +10023,30 @@ Document.prototype/Element.prototype.getElementsByClassName 메서드는 인수�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul>
-      <li class="fruit apple">Apple</li>
-      <li class="fruit banana">Banana</li>
-      <li class="fruit orange">Orange</li>
-    </ul>
-    <script>
-      // class 값이 'fruit'인 요소 노드를 모두 탐색하여 HTMLCollection 객체에 담아 반환한다.
-      const $elems = document.getElementsByClassName("fruit");
+	<body>
+		<ul>
+			<li class="fruit apple">Apple</li>
+			<li class="fruit banana">Banana</li>
+			<li class="fruit orange">Orange</li>
+		</ul>
+		<script>
+			// class 값이 'fruit'인 요소 노드를 모두 탐색하여 HTMLCollection 객체에 담아 반환한다.
+			const $elems = document.getElementsByClassName("fruit");
 
-      // 취득한 모든 요소의 CSS color 프로퍼티 값을 변경한다.
-      [...$elems].forEach(elem => {
-        elem.style.color = "red";
-      });
+			// 취득한 모든 요소의 CSS color 프로퍼티 값을 변경한다.
+			[...$elems].forEach(elem => {
+				elem.style.color = "red";
+			});
 
-      // class 값이 'fruit apple'인 요소 노드를 모두 탐색하여 HTMLCollection 객체에 담아 반환한다.
-      const $apples = document.getElementsByClassName("fruit apple");
+			// class 값이 'fruit apple'인 요소 노드를 모두 탐색하여 HTMLCollection 객체에 담아 반환한다.
+			const $apples = document.getElementsByClassName("fruit apple");
 
-      // 취득한 모든 요소 노드의 style.color 프로퍼티 값을 변경한다.
-      [...$apples].forEach(elem => {
-        elem.style.color = "blue";
-      });
-    </script>
-  </body>
+			// 취득한 모든 요소 노드의 style.color 프로퍼티 값을 변경한다.
+			[...$apples].forEach(elem => {
+				elem.style.color = "blue";
+			});
+		</script>
+	</body>
 </html>
 ```
 
@@ -10058,25 +10058,25 @@ getElementsByClassName 메서드는 Document.prototype과 Element.prototype에 �
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits">
-      <li class="apple">Apple</li>
-      <li class="banana">Banana</li>
-      <li class="orange">Orange</li>
-    </ul>
-    <div class="banana">Banana</div>
-    <script>
-      // DOM 전체에서 class 값이 'banana'인 요소 노드를 모두 탐색하여 반환한다.
-      const $bananasFromDocument = document.getElementsByClassName("banana");
-      console.log($bananasFromDocument); // HTMLCollection(2) [li.banana, div.banana]
+	<body>
+		<ul id="fruits">
+			<li class="apple">Apple</li>
+			<li class="banana">Banana</li>
+			<li class="orange">Orange</li>
+		</ul>
+		<div class="banana">Banana</div>
+		<script>
+			// DOM 전체에서 class 값이 'banana'인 요소 노드를 모두 탐색하여 반환한다.
+			const $bananasFromDocument = document.getElementsByClassName("banana");
+			console.log($bananasFromDocument); // HTMLCollection(2) [li.banana, div.banana]
 
-      // #fruits 요소의 자손 노드 중에서 class 값이 'banana'인 요소 노드를 모두 탐색하여 반환한다.
-      const $fruits = document.getElementById("fruits");
-      const $bananasFromFruits = $fruits.getElementsByClassName("banana");
+			// #fruits 요소의 자손 노드 중에서 class 값이 'banana'인 요소 노드를 모두 탐색하여 반환한다.
+			const $fruits = document.getElementById("fruits");
+			const $bananasFromFruits = $fruits.getElementsByClassName("banana");
 
-      console.log($bananasFromFruits); // HTMLCollection [li.banana]
-    </script>
-  </body>
+			console.log($bananasFromFruits); // HTMLCollection [li.banana]
+		</script>
+	</body>
 </html>
 ```
 
@@ -10121,20 +10121,20 @@ Document.prototype/Element.prototype.querySelector 는 인수로 전달한 CSS �
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul>
-      <li class="apple">Apple</li>
-      <li class="banana">Banana</li>
-      <li class="orange">Orange</li>
-    </ul>
-    <script>
-      // class 어트리뷰트 값이 'banana'인 첫 번째 요소 노드를 탐색하여 반환한다.
-      const $elem = document.querySelector(".banana");
+	<body>
+		<ul>
+			<li class="apple">Apple</li>
+			<li class="banana">Banana</li>
+			<li class="orange">Orange</li>
+		</ul>
+		<script>
+			// class 어트리뷰트 값이 'banana'인 첫 번째 요소 노드를 탐색하여 반환한다.
+			const $elem = document.querySelector(".banana");
 
-      // 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
-      $elem.style.color = "red";
-    </script>
-  </body>
+			// 취득한 요소 노드의 style.color 프로퍼티 값을 변경한다.
+			$elem.style.color = "red";
+		</script>
+	</body>
 </html>
 ```
 
@@ -10164,22 +10164,22 @@ Element.prototype.matches 메서드는 CSS 선택자를 통해 특정 요소 노
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits">
-      <li class="apple">Apple</li>
-      <li class="banana">Banana</li>
-      <li class="orange">Orange</li>
-    </ul>
-  </body>
-  <script>
-    const $apple = document.querySelector(".apple");
+	<body>
+		<ul id="fruits">
+			<li class="apple">Apple</li>
+			<li class="banana">Banana</li>
+			<li class="orange">Orange</li>
+		</ul>
+	</body>
+	<script>
+		const $apple = document.querySelector(".apple");
 
-    // $apple 노드는 '#fruits > li.apple'로 취득할 수 있다.
-    console.log($apple.matches("#fruits > li.apple")); // true
+		// $apple 노드는 '#fruits > li.apple'로 취득할 수 있다.
+		console.log($apple.matches("#fruits > li.apple")); // true
 
-    // $apple 노드는 '#fruits > li.banana'로 취득할 수 없다.
-    console.log($apple.matches("#fruits > li.banana")); // false
-  </script>
+		// $apple 노드는 '#fruits > li.banana'로 취득할 수 없다.
+		console.log($apple.matches("#fruits > li.banana")); // false
+	</script>
 </html>
 ```
 
@@ -10200,37 +10200,37 @@ HTMLCollection 객체는 노드 객체의 상태변화를 실시간으로 반영
 ```html
 <!DOCTYPE html>
 <head>
-  <style>
-    .red {
-      color: red;
-    }
-    .blue {
-      color: blue;
-    }
-  </style>
+	<style>
+		.red {
+			color: red;
+		}
+		.blue {
+			color: blue;
+		}
+	</style>
 </head>
 <html>
-  <body>
-    <ul id="fruits">
-      <li class="red">Apple</li>
-      <li class="red">Banana</li>
-      <li class="red">Orange</li>
-    </ul>
-    <script>
-      // class 값이 'red'인 요소 노드를 모두 탐색하여 HTMLCollection 객체에 담아 반환한다.
-      const $elems = document.getElementsByClassName("red");
-      // 이 시점에 HTMLCollection 객체에는 3개의 요소 노드가 담겨 있다.
-      console.log($elems); // HTMLCollection(3) [li.red, li.red, li.red]
+	<body>
+		<ul id="fruits">
+			<li class="red">Apple</li>
+			<li class="red">Banana</li>
+			<li class="red">Orange</li>
+		</ul>
+		<script>
+			// class 값이 'red'인 요소 노드를 모두 탐색하여 HTMLCollection 객체에 담아 반환한다.
+			const $elems = document.getElementsByClassName("red");
+			// 이 시점에 HTMLCollection 객체에는 3개의 요소 노드가 담겨 있다.
+			console.log($elems); // HTMLCollection(3) [li.red, li.red, li.red]
 
-      // HTMLCollection 객체의 모든 요소의 class 값을 'blue'로 변경한다.
-      for (let i = 0; i < $elems.length; i++) {
-        $elems[i].className = "blue";
-      }
+			// HTMLCollection 객체의 모든 요소의 class 값을 'blue'로 변경한다.
+			for (let i = 0; i < $elems.length; i++) {
+				$elems[i].className = "blue";
+			}
 
-      // HTMLCollection 객체의 요소가 3개에서 1개로 변경되었다.
-      console.log($elems); // HTMLCollection(1) [li.red]
-    </script>
-  </body>
+			// HTMLCollection 객체의 요소가 3개에서 1개로 변경되었다.
+			console.log($elems); // HTMLCollection(1) [li.red]
+		</script>
+	</body>
 </html>
 ```
 
@@ -10241,13 +10241,13 @@ HTMLCollection 객체는 노드 객체의 상태변화를 실시간으로 반영
 ```js
 // for 문을 역방향으로 순회
 for (let i = $elems.length - 1; i >= 0; i--) {
-  $elems[i].className = "blue";
+	$elems[i].className = "blue";
 }
 
 // while 문으로 HTMLCollection에 요소가 남아 있지 않을 때까지 무한 반복
 let i = 0;
 while ($elems.length > i) {
-  $elems[i].className = "blue";
+	$elems[i].className = "blue";
 }
 
 // 유사 배열 객체이면서 이터러블인 HTMLCollection을 배열로 변환하여 순회
@@ -10273,33 +10273,33 @@ NodeList 객체는 정적 상태를 유지하나, childNodes 프로퍼티가 반
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits">
-      <li>Apple</li>
-      <li>Banana</li>
-    </ul>
-  </body>
-  <script>
-    const $fruits = document.getElementById("fruits");
+	<body>
+		<ul id="fruits">
+			<li>Apple</li>
+			<li>Banana</li>
+		</ul>
+	</body>
+	<script>
+		const $fruits = document.getElementById("fruits");
 
-    // childNodes 프로퍼티는 NodeList 객체(live)를 반환한다.
-    const { childNodes } = $fruits;
-    console.log(childNodes instanceof NodeList); // true
+		// childNodes 프로퍼티는 NodeList 객체(live)를 반환한다.
+		const { childNodes } = $fruits;
+		console.log(childNodes instanceof NodeList); // true
 
-    // $fruits 요소의 자식 노드는 공백 텍스트 노드(39.3.1절 "공백 텍스트 노드" 참고)를 포함해 모두 5개다.
-    console.log(childNodes); // NodeList(5) [text, li, text, li, text]
+		// $fruits 요소의 자식 노드는 공백 텍스트 노드(39.3.1절 "공백 텍스트 노드" 참고)를 포함해 모두 5개다.
+		console.log(childNodes); // NodeList(5) [text, li, text, li, text]
 
-    for (let i = 0; i < childNodes.length; i++) {
-      // removeChild 메서드는 $fruits 요소의 자식 노드를 DOM에서 삭제한다.
-      // (39.6.9절 "노드 삭제" 참고)
-      // removeChild 메서드가 호출될 때마다 NodeList 객체인 childNodes가 실시간으로 변경된다.
-      // 따라서 첫 번째, 세 번째 다섯 번째 요소만 삭제된다.
-      $fruits.removeChild(childNodes[i]);
-    }
+		for (let i = 0; i < childNodes.length; i++) {
+			// removeChild 메서드는 $fruits 요소의 자식 노드를 DOM에서 삭제한다.
+			// (39.6.9절 "노드 삭제" 참고)
+			// removeChild 메서드가 호출될 때마다 NodeList 객체인 childNodes가 실시간으로 변경된다.
+			// 따라서 첫 번째, 세 번째 다섯 번째 요소만 삭제된다.
+			$fruits.removeChild(childNodes[i]);
+		}
 
-    // 예상과 다르게 $fruits 요소의 모든 자식 노드가 삭제되지 않는다.
-    console.log(childNodes); // NodeList(2) [li, li]
-  </script>
+		// 예상과 다르게 $fruits 요소의 모든 자식 노드가 삭제되지 않는다.
+		console.log(childNodes); // NodeList(2) [li, li]
+	</script>
 </html>
 ```
 
@@ -10308,26 +10308,26 @@ NodeList 객체는 정적 상태를 유지하나, childNodes 프로퍼티가 반
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits">
-      <li>Apple</li>
-      <li>Banana</li>
-    </ul>
-  </body>
-  <script>
-    const $fruits = document.getElementById("fruits");
+	<body>
+		<ul id="fruits">
+			<li>Apple</li>
+			<li>Banana</li>
+		</ul>
+	</body>
+	<script>
+		const $fruits = document.getElementById("fruits");
 
-    // childNodes 프로퍼티는 NodeList 객체(live)를 반환한다.
-    const { childNodes } = $fruits;
+		// childNodes 프로퍼티는 NodeList 객체(live)를 반환한다.
+		const { childNodes } = $fruits;
 
-    // 스프레드 문법을 사용하여 NodeList 객체를 배열로 변환한다.
-    [...childNodes].forEach(childNode => {
-      $fruits.removeChild(childNode);
-    });
+		// 스프레드 문법을 사용하여 NodeList 객체를 배열로 변환한다.
+		[...childNodes].forEach(childNode => {
+			$fruits.removeChild(childNode);
+		});
 
-    // $fruits 요소의 모든 자식 노드가 모두 삭제되었다.
-    console.log(childNodes); // NodeList []
-  </script>
+		// $fruits 요소의 모든 자식 노드가 모두 삭제되었다.
+		console.log(childNodes); // NodeList []
+	</script>
 </html>
 ```
 
@@ -10337,9 +10337,9 @@ NodeList 객체는 정적 상태를 유지하나, childNodes 프로퍼티가 반
 
 ```html
 <ul id="fruits">
-  <li class="apple">Apple</li>
-  <li class="banana">Banana</li>
-  <li class="orange">Orange</li>
+	<li class="apple">Apple</li>
+	<li class="banana">Banana</li>
+	<li class="orange">Orange</li>
 </ul>
 ```
 
@@ -10359,13 +10359,13 @@ HTML 요소 사이의 스페이스 ,탭, 개행 등의 공백 문자는 텍스�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits">
-      <li class="apple">Apple</li>
-      <li class="banana">Banana</li>
-      <li class="orange">Orange</li>
-    </ul>
-  </body>
+	<body>
+		<ul id="fruits">
+			<li class="apple">Apple</li>
+			<li class="banana">Banana</li>
+			<li class="orange">Orange</li>
+		</ul>
+	</body>
 </html>
 ```
 
@@ -10386,43 +10386,43 @@ HTML 요소 사이의 스페이스 ,탭, 개행 등의 공백 문자는 텍스�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits">
-      <li class="apple">Apple</li>
-      <li class="banana">Banana</li>
-      <li class="orange">Orange</li>
-    </ul>
-  </body>
-  <script>
-    // 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
-    const $fruits = document.getElementById("fruits");
+	<body>
+		<ul id="fruits">
+			<li class="apple">Apple</li>
+			<li class="banana">Banana</li>
+			<li class="orange">Orange</li>
+		</ul>
+	</body>
+	<script>
+		// 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
+		const $fruits = document.getElementById("fruits");
 
-    // #fruits 요소의 모든 자식 노드를 탐색한다.
-    // childNodes 프로퍼티가 반환한 NodeList에는 요소 노드뿐만 아니라 텍스트 노드도 포함되어 있다.
-    console.log($fruits.childNodes);
-    // NodeList(7) [text, li.apple, text, li.banana, text, li.orange, text]
+		// #fruits 요소의 모든 자식 노드를 탐색한다.
+		// childNodes 프로퍼티가 반환한 NodeList에는 요소 노드뿐만 아니라 텍스트 노드도 포함되어 있다.
+		console.log($fruits.childNodes);
+		// NodeList(7) [text, li.apple, text, li.banana, text, li.orange, text]
 
-    // #fruits 요소의 모든 자식 노드를 탐색한다.
-    // children 프로퍼티가 반환한 HTMLCollection에는 요소 노드만 포함되어 있다.
-    console.log($fruits.children);
-    // HTMLCollection(3) [li.apple, li.banana, li.orange]
+		// #fruits 요소의 모든 자식 노드를 탐색한다.
+		// children 프로퍼티가 반환한 HTMLCollection에는 요소 노드만 포함되어 있다.
+		console.log($fruits.children);
+		// HTMLCollection(3) [li.apple, li.banana, li.orange]
 
-    // #fruits 요소의 첫 번째 자식 노드를 탐색한다.
-    // firstChild 프로퍼티는 텍스트 노드를 반환할 수도 있다.
-    console.log($fruits.firstChild); // #text
+		// #fruits 요소의 첫 번째 자식 노드를 탐색한다.
+		// firstChild 프로퍼티는 텍스트 노드를 반환할 수도 있다.
+		console.log($fruits.firstChild); // #text
 
-    // #fruits 요소의 마지막 자식 노드를 탐색한다.
-    // lastChild 프로퍼티는 텍스트 노드를 반환할 수도 있다.
-    console.log($fruits.lastChild); // #text
+		// #fruits 요소의 마지막 자식 노드를 탐색한다.
+		// lastChild 프로퍼티는 텍스트 노드를 반환할 수도 있다.
+		console.log($fruits.lastChild); // #text
 
-    // #fruits 요소의 첫 번째 자식 노드를 탐색한다.
-    // firstElementChild 프로퍼티는 요소 노드만 반환한다.
-    console.log($fruits.firstElementChild); // li.apple
+		// #fruits 요소의 첫 번째 자식 노드를 탐색한다.
+		// firstElementChild 프로퍼티는 요소 노드만 반환한다.
+		console.log($fruits.firstElementChild); // li.apple
 
-    // #fruits 요소의 마지막 자식 노드를 탐색한다.
-    // lastElementChild 프로퍼티는 요소 노드만 반환한다.
-    console.log($fruits.lastElementChild); // li.orange
-  </script>
+		// #fruits 요소의 마지막 자식 노드를 탐색한다.
+		// lastElementChild 프로퍼티는 요소 노드만 반환한다.
+		console.log($fruits.lastElementChild); // li.orange
+	</script>
 </html>
 ```
 
@@ -10433,17 +10433,17 @@ HTML 요소 사이의 스페이스 ,탭, 개행 등의 공백 문자는 텍스�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits"></ul>
-  </body>
-  <script>
-    // 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
-    const $fruits = document.getElementById("fruits");
+	<body>
+		<ul id="fruits"></ul>
+	</body>
+	<script>
+		// 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
+		const $fruits = document.getElementById("fruits");
 
-    // #fruits 요소에 자식 노드가 존재하는지 확인한다.
-    // hasChildNodes 메서드는 텍스트 노드를 포함하여 자식 노드의 존재를 확인한다.
-    console.log($fruits.hasChildNodes()); // true
-  </script>
+		// #fruits 요소에 자식 노드가 존재하는지 확인한다.
+		// hasChildNodes 메서드는 텍스트 노드를 포함하여 자식 노드의 존재를 확인한다.
+		console.log($fruits.hasChildNodes()); // true
+	</script>
 </html>
 ```
 
@@ -10452,21 +10452,21 @@ HTML 요소 사이의 스페이스 ,탭, 개행 등의 공백 문자는 텍스�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits"></ul>
-  </body>
-  <script>
-    // 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
-    const $fruits = document.getElementById("fruits");
+	<body>
+		<ul id="fruits"></ul>
+	</body>
+	<script>
+		// 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
+		const $fruits = document.getElementById("fruits");
 
-    // hasChildNodes 메서드는 텍스트 노드를 포함하여 자식 노드의 존재를 확인한다.
-    console.log($fruits.hasChildNodes()); // true
+		// hasChildNodes 메서드는 텍스트 노드를 포함하여 자식 노드의 존재를 확인한다.
+		console.log($fruits.hasChildNodes()); // true
 
-    // 자식 노드 중에 텍스트 노드가 아닌 요소 노드가 존재하는지는 확인한다.
-    console.log(!!$fruits.children.length); // 0 -> false
-    // 자식 노드 중에 텍스트 노드가 아닌 요소 노드가 존재하는지는 확인한다.
-    console.log(!!$fruits.childElementCount); // 0 -> false
-  </script>
+		// 자식 노드 중에 텍스트 노드가 아닌 요소 노드가 존재하는지는 확인한다.
+		console.log(!!$fruits.children.length); // 0 -> false
+		// 자식 노드 중에 텍스트 노드가 아닌 요소 노드가 존재하는지는 확인한다.
+		console.log(!!$fruits.childElementCount); // 0 -> false
+	</script>
 </html>
 ```
 
@@ -10477,13 +10477,13 @@ HTML 요소 사이의 스페이스 ,탭, 개행 등의 공백 문자는 텍스�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <div id="foo">Hello</div>
-    <script>
-      // 요소 노드의 텍스트 노드는 firstChild 프로퍼티로 접근할 수 있다.
-      console.log(document.getElementById("foo").firstChild); // #text
-    </script>
-  </body>
+	<body>
+		<div id="foo">Hello</div>
+		<script>
+			// 요소 노드의 텍스트 노드는 firstChild 프로퍼티로 접근할 수 있다.
+			console.log(document.getElementById("foo").firstChild); // #text
+		</script>
+	</body>
 </html>
 ```
 
@@ -10494,20 +10494,20 @@ HTML 요소 사이의 스페이스 ,탭, 개행 등의 공백 문자는 텍스�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits">
-      <li class="apple">Apple</li>
-      <li class="banana">Banana</li>
-      <li class="orange">Orange</li>
-    </ul>
-  </body>
-  <script>
-    // 노드 탐색의 기점이 되는 .banana 요소 노드를 취득한다.
-    const $banana = document.querySelector(".banana");
+	<body>
+		<ul id="fruits">
+			<li class="apple">Apple</li>
+			<li class="banana">Banana</li>
+			<li class="orange">Orange</li>
+		</ul>
+	</body>
+	<script>
+		// 노드 탐색의 기점이 되는 .banana 요소 노드를 취득한다.
+		const $banana = document.querySelector(".banana");
 
-    // .banana 요소 노드의 부모 노드를 탐색한다.
-    console.log($banana.parentNode); // ul#fruits
-  </script>
+		// .banana 요소 노드의 부모 노드를 탐색한다.
+		console.log($banana.parentNode); // ul#fruits
+	</script>
 </html>
 ```
 
@@ -10524,47 +10524,47 @@ HTML 요소 사이의 스페이스 ,탭, 개행 등의 공백 문자는 텍스�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <ul id="fruits">
-      <li class="apple">Apple</li>
-      <li class="banana">Banana</li>
-      <li class="orange">Orange</li>
-    </ul>
-  </body>
-  <script>
-    // 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
-    const $fruits = document.getElementById("fruits");
+	<body>
+		<ul id="fruits">
+			<li class="apple">Apple</li>
+			<li class="banana">Banana</li>
+			<li class="orange">Orange</li>
+		</ul>
+	</body>
+	<script>
+		// 노드 탐색의 기점이 되는 #fruits 요소 노드를 취득한다.
+		const $fruits = document.getElementById("fruits");
 
-    // #fruits 요소의 첫 번째 자식 노드를 탐색한다.
-    // firstChild 프로퍼티는 요소 노드뿐만 아니라 텍스트 노드를 반환할 수도 있다.
-    const { firstChild } = $fruits;
-    console.log(firstChild); // #text
+		// #fruits 요소의 첫 번째 자식 노드를 탐색한다.
+		// firstChild 프로퍼티는 요소 노드뿐만 아니라 텍스트 노드를 반환할 수도 있다.
+		const { firstChild } = $fruits;
+		console.log(firstChild); // #text
 
-    // #fruits 요소의 첫 번째 자식 노드(텍스트 노드)의 다음 형제 노드를 탐색한다.
-    // nextSibling 프로퍼티는 요소 노드뿐만 아니라 텍스트 노드를 반환할 수도 있다.
-    const { nextSibling } = firstChild;
-    console.log(nextSibling); // li.apple
+		// #fruits 요소의 첫 번째 자식 노드(텍스트 노드)의 다음 형제 노드를 탐색한다.
+		// nextSibling 프로퍼티는 요소 노드뿐만 아니라 텍스트 노드를 반환할 수도 있다.
+		const { nextSibling } = firstChild;
+		console.log(nextSibling); // li.apple
 
-    // li.apple 요소의 이전 형제 노드를 탐색한다.
-    // previousSibling 프로퍼티는 요소 노드뿐만 아니라 텍스트 노드를 반환할 수도 있다.
-    const { previousSibling } = nextSibling;
-    console.log(previousSibling); // #text
+		// li.apple 요소의 이전 형제 노드를 탐색한다.
+		// previousSibling 프로퍼티는 요소 노드뿐만 아니라 텍스트 노드를 반환할 수도 있다.
+		const { previousSibling } = nextSibling;
+		console.log(previousSibling); // #text
 
-    // #fruits 요소의 첫 번째 자식 요소 노드를 탐색한다.
-    // firstElementChild 프로퍼티는 요소 노드만 반환한다.
-    const { firstElementChild } = $fruits;
-    console.log(firstElementChild); // li.apple
+		// #fruits 요소의 첫 번째 자식 요소 노드를 탐색한다.
+		// firstElementChild 프로퍼티는 요소 노드만 반환한다.
+		const { firstElementChild } = $fruits;
+		console.log(firstElementChild); // li.apple
 
-    // #fruits 요소의 첫 번째 자식 요소 노드(li.apple)의 다음 형제 노드를 탐색한다.
-    // nextElementSibling 프로퍼티는 요소 노드만 반환한다.
-    const { nextElementSibling } = firstElementChild;
-    console.log(nextElementSibling); // li.banana
+		// #fruits 요소의 첫 번째 자식 요소 노드(li.apple)의 다음 형제 노드를 탐색한다.
+		// nextElementSibling 프로퍼티는 요소 노드만 반환한다.
+		const { nextElementSibling } = firstElementChild;
+		console.log(nextElementSibling); // li.banana
 
-    // li.banana 요소의 이전 형제 요소 노드를 탐색한다.
-    // previousElementSibling 프로퍼티는 요소 노드만 반환한다.
-    const { previousElementSibling } = nextElementSibling;
-    console.log(previousElementSibling); // li.apple
-  </script>
+		// li.banana 요소의 이전 형제 요소 노드를 탐색한다.
+		// previousElementSibling 프로퍼티는 요소 노드만 반환한다.
+		const { previousElementSibling } = nextElementSibling;
+		console.log(previousElementSibling); // li.apple
+	</script>
 </html>
 ```
 
@@ -10579,24 +10579,24 @@ HTML 요소 사이의 스페이스 ,탭, 개행 등의 공백 문자는 텍스�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <div id="foo">Hello</div>
-  </body>
-  <script>
-    // 문서 노드의 노드 정보를 취득한다.
-    console.log(document.nodeType); // 9
-    console.log(document.nodeName); // #document
+	<body>
+		<div id="foo">Hello</div>
+	</body>
+	<script>
+		// 문서 노드의 노드 정보를 취득한다.
+		console.log(document.nodeType); // 9
+		console.log(document.nodeName); // #document
 
-    // 요소 노드의 노드 정보를 취득한다.
-    const $foo = document.getElementById("foo");
-    console.log($foo.nodeType); // 1
-    console.log($foo.nodeName); // DIV
+		// 요소 노드의 노드 정보를 취득한다.
+		const $foo = document.getElementById("foo");
+		console.log($foo.nodeType); // 1
+		console.log($foo.nodeName); // DIV
 
-    // 텍스트 노드의 노드 정보를 취득한다.
-    const $textNode = $foo.firstChild;
-    console.log($textNode.nodeType); // 3
-    console.log($textNode.nodeName); // #text
-  </script>
+		// 텍스트 노드의 노드 정보를 취득한다.
+		const $textNode = $foo.firstChild;
+		console.log($textNode.nodeType); // 3
+		console.log($textNode.nodeName); // #text
+	</script>
 </html>
 ```
 
@@ -10609,21 +10609,21 @@ nodeValue 프로퍼티는 참조와 할당 둘 다 가능하다. 노드 객체�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <div id="foo">Hello</div>
-  </body>
-  <script>
-    // 문서 노드의 nodeValue 프로퍼티를 참조한다.
-    console.log(document.nodeValue); // null
+	<body>
+		<div id="foo">Hello</div>
+	</body>
+	<script>
+		// 문서 노드의 nodeValue 프로퍼티를 참조한다.
+		console.log(document.nodeValue); // null
 
-    // 요소 노드의 nodeValue 프로퍼티를 참조한다.
-    const $foo = document.getElementById("foo");
-    console.log($foo.nodeValue); // null
+		// 요소 노드의 nodeValue 프로퍼티를 참조한다.
+		const $foo = document.getElementById("foo");
+		console.log($foo.nodeValue); // null
 
-    // 텍스트 노드의 nodeValue 프로퍼티를 참조한다.
-    const $textNode = $foo.firstChild;
-    console.log($textNode.nodeValue); // Hello
-  </script>
+		// 텍스트 노드의 nodeValue 프로퍼티를 참조한다.
+		const $textNode = $foo.firstChild;
+		console.log($textNode.nodeValue); // Hello
+	</script>
 </html>
 ```
 
@@ -10635,18 +10635,18 @@ nodeValue 프로퍼티는 참조와 할당 둘 다 가능하다. 노드 객체�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <div id="foo">Hello</div>
-  </body>
-  <script>
-    // 1. #foo 요소 노드의 자식 노드인 텍스트 노드를 취득한다.
-    const $textNode = document.getElementById("foo").firstChild;
+	<body>
+		<div id="foo">Hello</div>
+	</body>
+	<script>
+		// 1. #foo 요소 노드의 자식 노드인 텍스트 노드를 취득한다.
+		const $textNode = document.getElementById("foo").firstChild;
 
-    // 2. nodeValue 프로퍼티를 사용하여 텍스트 노드의 값을 변경한다.
-    $textNode.nodeValue = "World";
+		// 2. nodeValue 프로퍼티를 사용하여 텍스트 노드의 값을 변경한다.
+		$textNode.nodeValue = "World";
 
-    console.log($textNode.nodeValue); // World
-  </script>
+		console.log($textNode.nodeValue); // World
+	</script>
 </html>
 ```
 
@@ -10658,13 +10658,13 @@ nodeValue 프로퍼티는 참조와 할당 둘 다 가능하다. 노드 객체�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <div id="foo">Hello <span>world!</span></div>
-  </body>
-  <script>
-    // #foo 요소 노드의 텍스트를 모두 취득한다. 이때 HTML 마크업은 무시된다.
-    console.log(document.getElementById("foo").textContent); // Hello world!
-  </script>
+	<body>
+		<div id="foo">Hello <span>world!</span></div>
+	</body>
+	<script>
+		// #foo 요소 노드의 텍스트를 모두 취득한다. 이때 HTML 마크업은 무시된다.
+		console.log(document.getElementById("foo").textContent); // Hello world!
+	</script>
 </html>
 ```
 
@@ -10673,17 +10673,17 @@ nodeValue를 사용하면 textContent를 사용할 떄와 비교해 더 복잡�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <div id="foo">Hello <span>world!</span></div>
-  </body>
-  <script>
-    // #foo 요소 노드는 텍스트 노드가 아니다.
-    console.log(document.getElementById("foo").nodeValue); // null
-    // #foo 요소 노드의 자식 노드인 텍스트 노드의 값을 취득한다.
-    console.log(document.getElementById("foo").firstChild.nodeValue); // Hello
-    // span 요소 노드의 자식 노드인 텍스트 노드의 값을 취득한다.
-    console.log(document.getElementById("foo").lastChild.firstChild.nodeValue); // world!
-  </script>
+	<body>
+		<div id="foo">Hello <span>world!</span></div>
+	</body>
+	<script>
+		// #foo 요소 노드는 텍스트 노드가 아니다.
+		console.log(document.getElementById("foo").nodeValue); // null
+		// #foo 요소 노드의 자식 노드인 텍스트 노드의 값을 취득한다.
+		console.log(document.getElementById("foo").firstChild.nodeValue); // Hello
+		// span 요소 노드의 자식 노드인 텍스트 노드의 값을 취득한다.
+		console.log(document.getElementById("foo").lastChild.firstChild.nodeValue); // world!
+	</script>
 </html>
 ```
 
@@ -10692,17 +10692,17 @@ nodeValue를 사용하면 textContent를 사용할 떄와 비교해 더 복잡�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <!-- 요소 노드의 콘텐츠 영역에 다른 요소 노드가 없고 텍스트만 존재 -->
-    <div id="foo">Hello</div>
-  </body>
-  <script>
-    const $foo = document.getElementById("foo");
+	<body>
+		<!-- 요소 노드의 콘텐츠 영역에 다른 요소 노드가 없고 텍스트만 존재 -->
+		<div id="foo">Hello</div>
+	</body>
+	<script>
+		const $foo = document.getElementById("foo");
 
-    // 요소 노드의 콘텐츠 영역에 자식 요소 노드가 없고 텍스트만 존재한다면
-    // firstChild.nodeValue와 textContent는 같은 결과를 반환한다.
-    console.log($foo.textContent === $foo.firstChild.nodeValue); // true
-  </script>
+		// 요소 노드의 콘텐츠 영역에 자식 요소 노드가 없고 텍스트만 존재한다면
+		// firstChild.nodeValue와 textContent는 같은 결과를 반환한다.
+		console.log($foo.textContent === $foo.firstChild.nodeValue); // true
+	</script>
 </html>
 ```
 
@@ -10711,14 +10711,14 @@ nodeValue를 사용하면 textContent를 사용할 떄와 비교해 더 복잡�
 ```html
 <!DOCTYPE html>
 <html>
-  <body>
-    <div id="foo">Hello <span>world!</span></div>
-  </body>
-  <script>
-    // #foo 요소 노드의 모든 자식 노드가 제거되고 할당한 문자열이 텍스트로 추가된다.
-    // 이때 HTML 마크업이 파싱되지 않는다.
-    document.getElementById("foo").textContent = "Hi <span>there!</span>";
-  </script>
+	<body>
+		<div id="foo">Hello <span>world!</span></div>
+	</body>
+	<script>
+		// #foo 요소 노드의 모든 자식 노드가 제거되고 할당한 문자열이 텍스트로 추가된다.
+		// 이때 HTML 마크업이 파싱되지 않는다.
+		document.getElementById("foo").textContent = "Hi <span>there!</span>";
+	</script>
 </html>
 ```
 
@@ -10726,3 +10726,50 @@ nodeValue를 사용하면 textContent를 사용할 떄와 비교해 더 복잡�
 
 - CSS에 순종적이다. CSS에 의해 비표시되고 있다면 해당 요소의 텍스트를 반환하지 않는다.
 - CSS를 고려해야 하므로 textContent 프로퍼티보다 느리다.
+
+# 40장 이벤트
+
+## 40.1 이벤트 드리븐 프로그래밍
+
+- 브라우저는 특정 사건이 발생하면 이를 감지해 이벤트를 발생 시킴
+- 애플리케이션이 어떤 특정 이벤트에 반응하여 어떤 일을 하고 싶으면 브라우저에게 그 사건을 알려 호출을 위임함
+- 호출될 함수: 이벤트 핸들러
+- 브라우저에게 이벤트 헨들러의 호출을 위임하는 것: 이벤트 핸들러 등록
+
+이때, 개발자가 명시적으로 함수를 호출하는 것이 아니라, 브라우저에게 함수 호출을 위임함.
+
+이처럼, 이벤트와 이벤트 핸들러를 통해 애플리케이션은 상호작용을 함.
+
+- 이벤트 드리븐 프로그래밍: 프로그램의 흐름을 이벤트 중심으로 제어하는 프로그램 방식
+
+## 40.3 이벤트 핸들러 등록
+
+이벤트가 발생했을 때 브라우저에게 이벤트 핸들러의 호출을 위임하는 것을 이벤트 핸들러 등록이라고 한다. 방법에는 3가지가 있다.
+
+### 40.3.1 이벤트 핸들러 어트리뷰트 방식
+
+```js
+<!DOCTYPE html>
+<html>
+<body>
+ <button onclick="sayHi('Lee')">Click me!</button>
+ <script>
+   function sayHi(name) {
+     console.log(`Hi! ${name}.`);
+   }
+ </script>
+</body>
+</html>
+```
+
+HTML요소의 어트리뷰트 중 이벤트에 대응하는 이벤트 핸들러의 어트리뷰트 값에 문을 할당하는 방식.
+
+- 어트리뷰트는 주로 on접두사 + 이벤트 타입으로 이루어짐
+- 이때 함수 참조가 아닌 호출문의 문을 할당함
+- 사실 이벤트 핸들러의 등록은 호출이 아니라 참조를 등록해야함. 그러나 이 방식은 암묵적으로 생성될 이벤트 핸들러의 몸체를 가리킴. 즉, 해당 함수를 암묵적으로 생성하고, 동일한 이름의 이벤트 핸들러 프로퍼티에 할당함
+- 이 방식은 이벤트 헨들러에 인수를 전달하기 위해서임. 만약 참조를 전달해야하면 인수를 전달하기가 곤란함
+
+```js
+<!-- 이벤트 핸들러에 인수를 전달하기 곤란하다. -->
+<button onclick="sayHi">Click me!</button>
+```
